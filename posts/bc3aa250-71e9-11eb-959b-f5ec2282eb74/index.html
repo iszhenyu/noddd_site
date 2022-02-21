@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="keywords" content="Hexo Theme Keep">
+    <meta name="description" content="Hexo Theme Keep">
+    <meta name="author" content="ZhenYu">
+    
+    <title>
+        
+            指数基金常见估值指标 |
+        
+        NoDDD
+    </title>
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <link rel="shortcut icon" href="/images/logo.svg">
+    
+<link rel="stylesheet" href="/css/font-awesome.min.css">
+
+    <script id="hexo-configurations">
+    let KEEP = window.KEEP || {};
+    KEEP.hexo_config = {"hostname":"noddd.cn","root":"/","language":"zh-CN"};
+    KEEP.theme_config = {"toc":{"enable":true,"number":true,"expand_all":true,"init_open":true},"style":{"primary_color":"#0066CC","avatar":"/images/avatar.svg","favicon":"/images/logo.svg","article_img_align":"left","left_side_width":"260px","content_max_width":"920px","hover":{"shadow":false,"scale":false},"first_screen":{"enable":false,"background_img":"/images/bg.svg","description":"Keep writing and Keep loving."},"scroll":{"progress_bar":{"enable":true},"percent":{"enable":true}}},"local_search":{"enable":false,"preload":false},"code_copy":{"enable":false,"style":"default"},"pjax":{"enable":false},"lazyload":{"enable":false},"version":"3.4.3"};
+    KEEP.language_ago = {"second":"%s 秒前","minute":"%s 分钟前","hour":"%s 小时前","day":"%s 天前","week":"%s 周前","month":"%s 月前","year":"%s 年前"};
+  </script>
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<body>
+<div class="progress-bar-container">
+    
+        <span class="scroll-progress-bar"></span>
+    
+
+    
+</div>
+
+
+<main class="page-container">
+
+    
+
+    <div class="page-main-content">
+
+        <div class="page-main-content-top">
+            <header class="header-wrapper">
+
+    <div class="header-content">
+        <div class="left">
+            
+            <a class="logo-title" href="/">
+                NoDDD
+            </a>
+        </div>
+
+        <div class="right">
+            <div class="pc">
+                <ul class="menu-list">
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/"
+                            >
+                                首页
+                            </a>
+                        </li>
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/tags/go"
+                            >
+                                GO
+                            </a>
+                        </li>
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/tags/DDD/"
+                            >
+                                DDD
+                            </a>
+                        </li>
+                    
+                    
+                </ul>
+            </div>
+            <div class="mobile">
+                
+                <div class="icon-item menu-bar">
+                    <div class="menu-bar-middle"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="header-drawer">
+        <ul class="drawer-menu-list">
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/">首页</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/tags/go">GO</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/tags/DDD/">DDD</a>
+                </li>
+            
+        </ul>
+    </div>
+
+    <div class="window-mask"></div>
+
+</header>
+
+
+        </div>
+
+        <div class="page-main-content-middle">
+
+            <div class="main-content">
+
+                
+                    <div class="fade-in-down-animation">
+    <div class="article-content-container">
+
+        <div class="article-title">
+            <span class="title-hover-animation">指数基金常见估值指标</span>
+        </div>
+
+        
+            <div class="article-header">
+                <div class="avatar">
+                    <img src="/images/avatar.svg">
+                </div>
+                <div class="info">
+                    <div class="author">
+                        <span class="name">ZhenYu</span>
+                        
+                            <span class="author-label">Lv4</span>
+                        
+                    </div>
+                    <div class="meta-info">
+                        <div class="article-meta-info">
+    <span class="article-date article-meta-item">
+        <i class="fas fa-edit"></i>&nbsp;2021-02-18 21:03:46
+    </span>
+    
+    
+        <span class="article-tags article-meta-item">
+            <i class="fas fa-tags"></i>&nbsp;
+            <ul>
+                
+                    <li>
+                        <a href="/tags/%E7%90%86%E8%B4%A2/">理财</a>&nbsp;
+                    </li>
+                
+                    <li>
+                        | <a href="/tags/%E5%9F%BA%E9%87%91/">基金</a>&nbsp;
+                    </li>
+                
+            </ul>
+        </span>
+    
+
+    
+    
+        <span class="article-wordcount article-meta-item">
+            <i class="fas fa-file-word"></i>&nbsp;<span>949 字</span>
+        </span>
+    
+    
+    
+        <span class="article-pv article-meta-item">
+            <i class="fas fa-eye"></i>&nbsp;<span id="busuanzi_value_page_pv"></span>
+        </span>
+    
+</div>
+
+                    </div>
+                </div>
+            </div>
+        
+
+        <div class="article-content markdown-body">
+            <h2 id="市盈率"><a href="#市盈率" class="headerlink" title="市盈率"></a>市盈率</h2><h3 id="基本概念"><a href="#基本概念" class="headerlink" title="基本概念"></a>基本概念</h3><p>定义：公司市值/公司盈利，英文缩写是PE=P/E，其中P代表公司市值，E代表公司盈利。</p>
+<ul>
+<li>静态市盈率：用公司上一个年底的净利润作为E；</li>
+<li>滚动市盈率：用最近4个季度财报的净利润作为E；</li>
+<li>动态市盈率：用预估的公司下一年底净利润作为E；</li>
+</ul>
+<p>市盈率背后反映的是我们愿意为获取一元的净利润付出多少代价，以及对公司市值的估算。一个公司的盈利在一年里很少有大幅的波动，因此市盈率的波动会带来市值的波动，简单来说，牛市的时候公司市值大幅上涨，熊市的时候大幅下跌。</p>
+<h3 id="适用范围"><a href="#适用范围" class="headerlink" title="适用范围"></a>适用范围</h3><ol>
+<li>流通性好</li>
+</ol>
+<p>流通性不好的股票通常是一些小盘股，很少的资金买卖就会导致暴涨暴跌。因此，你的投资行为很可能影响市价，从而形成一种反馈效应，这种情况下估值指标就没有什么参考意义了。</p>
+<ol start="2">
+<li>盈利稳定</li>
+</ol>
+<p>市盈率的第二个变量是盈利，如果盈利呈周期性波动或者长期亏损，也不适用市盈率。</p>
+<p>比如一个股票进入了下行周期，周期会不断减少，根据PE=P/E这个公式，市盈率是逐渐变大的，这种情况就是所谓的“市盈率陷阱”。</p>
+<p>再比如证券行业，当牛市的时候利润暴涨数倍，从而造成市盈率大幅降低，看似低估，实际上周期一过利润就会骤减。</p>
+<p>最后，处于高速成长期的股票也不适用于市盈率，因为这个时候公司的盈利大部分需要再投入扩大规模，盈利会被人为调整，也不稳定。</p>
+<h2 id="盈利收益率"><a href="#盈利收益率" class="headerlink" title="盈利收益率"></a>盈利收益率</h2><p>简单来说，盈利收益率是市盈率的倒数。它代表的意义是，假如我们把一家公司全部买下来，这家公司一年的盈利能够带给我们的收益率。</p>
+<p>一般来说，盈利收益率越高代表公司的估值就越低，公司越有可能被低估。</p>
+<p>它的适用条件跟市盈率是一样的。</p>
+<h2 id="市净率"><a href="#市净率" class="headerlink" title="市净率"></a>市净率</h2><h3 id="基本概念-1"><a href="#基本概念-1" class="headerlink" title="基本概念"></a>基本概念</h3><p>市净率指的是每股股价与每股净资产的比率，定义如下：PB=P/B，其中P代表公司市值，B代表公司净资产。而净资产就是资产减去负债，这个指标比盈利更加稳定。</p>
+<p>影响市净率的因素有下面四个：</p>
+<ul>
+<li>企业运作资产的效率：ROE</li>
+</ul>
+<p>ROE=净利润/净资产，ROE越高，资产运作的效率就越高，市净率也就越高。</p>
+<ul>
+<li>资产的价值稳定性</li>
+</ul>
+<p>资产价值越稳定，市净率的有效性就越高。比如白酒时间越长越增值，但是电子产品如果没有及时销售则会迅速贬值。</p>
+<ul>
+<li>无形资产</li>
+</ul>
+<p>比如品牌、专利、渠道影响力、行业话语权等都属于无形资产，如果一个企业主要靠这些来经营就没有参考市净率的价值了。</p>
+<ul>
+<li>负债大增或亏损</li>
+</ul>
+<p>这种情况会侵蚀更多的资产，导致净资产减少。</p>
+<h3 id="适用范围-1"><a href="#适用范围-1" class="headerlink" title="适用范围"></a>适用范围</h3><p>企业的资产大多是比较容易衡量价值的有形资产，并且是长期保值的资产，这个时候比较适合用市净率来估值。</p>
+<p>证券、航空、航运、能源等都比较适用。</p>
+<p>还有一个情况是原本盈利稳定的宽基指数基金在短期内盈利不稳定，也可以用市净率来辅助估值。</p>
+<h2 id="股息率"><a href="#股息率" class="headerlink" title="股息率"></a>股息率</h2>
+        </div>
+
+        
+
+        
+            <div class="article-nav">
+                
+                    <div class="article-prev">
+                        <a class="prev"
+                           rel="prev"
+                           href="/posts/2bd66650-b185-11eb-b56e-3d5fc3c744ce/"
+                        >
+                            <span class="left arrow-icon flex-center">
+                              <i class="fas fa-chevron-left"></i>
+                            </span>
+                            <span class="title flex-center">
+                                <span class="post-nav-title-item">谈谈缓存</span>
+                                <span class="post-nav-item">上一篇</span>
+                            </span>
+                        </a>
+                    </div>
+                
+                
+                    <div class="article-next">
+                        <a class="next"
+                           rel="next"
+                           href="/posts/f837f420-71e8-11eb-bad1-fbdca69e3469/"
+                        >
+                            <span class="title flex-center">
+                                <span class="post-nav-title-item">指数基金分类</span>
+                                <span class="post-nav-item">下一篇</span>
+                            </span>
+                            <span class="right arrow-icon flex-center">
+                              <i class="fas fa-chevron-right"></i>
+                            </span>
+                        </a>
+                    </div>
+                
+            </div>
+        
+
+        
+    </div>
+</div>
+
+
+                
+            </div>
+
+        </div>
+
+        <div class="page-main-content-bottom">
+            <footer class="footer">
+    <div class="info-container">
+        <div class="copyright-info info-item">
+            &copy;
+            
+              <span>2020</span>&nbsp;-&nbsp;
+            
+            2022&nbsp;<i class="fas fa-heart icon-animate"></i>&nbsp;<a href="/">ZhenYu</a>
+        </div>
+        
+            <script async  src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+            <div class="website-count info-item">
+                
+                    <span id="busuanzi_container_site_uv">
+                        访问人数&nbsp;<span id="busuanzi_value_site_uv"></span>&ensp;
+                    </span>
+                
+                
+                    <span id="busuanzi_container_site_pv">
+                        总访问量&nbsp;<span id="busuanzi_value_site_pv"></span>
+                    </span>
+                
+            </div>
+        
+        <div class="theme-info info-item">
+            由 <a target="_blank" href="https://hexo.io">Hexo</a> 驱动&nbsp;|&nbsp;主题&nbsp;<a class="theme-version" target="_blank" href="https://github.com/XPoet/hexo-theme-keep">Keep v3.4.3</a>
+        </div>
+        
+            <div class="icp-info info-item"><a target="_blank" rel="nofollow" href="https://beian.miit.gov.cn">京ICP备18000555号-4</a></div>
+        
+    </div>
+</footer>
+
+        </div>
+    </div>
+
+    
+        <div class="post-tools">
+            <div class="post-tools-container">
+    <ul class="tools-list">
+        <!-- TOC aside toggle -->
+        
+            <li class="tools-item page-aside-toggle">
+                <i class="fas fa-outdent"></i>
+            </li>
+        
+
+        <!-- go comment -->
+        
+    </ul>
+</div>
+
+        </div>
+    
+
+    <div class="right-bottom-side-tools">
+        <div class="side-tools-container">
+    <ul class="side-tools-list">
+        <li class="tools-item tool-font-adjust-plus flex-center">
+            <i class="fas fa-search-plus"></i>
+        </li>
+
+        <li class="tools-item tool-font-adjust-minus flex-center">
+            <i class="fas fa-search-minus"></i>
+        </li>
+
+        <li class="tools-item tool-expand-width flex-center">
+            <i class="fas fa-arrows-alt-h"></i>
+        </li>
+
+        <li class="tools-item tool-dark-light-toggle flex-center">
+            <i class="fas fa-moon"></i>
+        </li>
+
+        <!-- rss -->
+        
+
+        
+
+        <li class="tools-item tool-scroll-to-bottom flex-center">
+            <i class="fas fa-arrow-down"></i>
+        </li>
+    </ul>
+
+    <ul class="exposed-tools-list">
+        <li class="tools-item tool-toggle-show flex-center">
+            <i class="fas fa-cog fa-spin"></i>
+        </li>
+        
+            <li class="tools-item tool-scroll-to-top flex-center">
+                <i class="arrow-up fas fa-arrow-up"></i>
+                <span class="percent"></span>
+            </li>
+        
+    </ul>
+</div>
+
+    </div>
+
+    
+        <aside class="page-aside">
+            <div class="post-toc-wrap">
+    <div class="post-toc">
+        <ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B8%82%E7%9B%88%E7%8E%87"><span class="nav-number">1.</span> <span class="nav-text">市盈率</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5"><span class="nav-number">1.1.</span> <span class="nav-text">基本概念</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%80%82%E7%94%A8%E8%8C%83%E5%9B%B4"><span class="nav-number">1.2.</span> <span class="nav-text">适用范围</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%9B%88%E5%88%A9%E6%94%B6%E7%9B%8A%E7%8E%87"><span class="nav-number">2.</span> <span class="nav-text">盈利收益率</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B8%82%E5%87%80%E7%8E%87"><span class="nav-number">3.</span> <span class="nav-text">市净率</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5-1"><span class="nav-number">3.1.</span> <span class="nav-text">基本概念</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%80%82%E7%94%A8%E8%8C%83%E5%9B%B4-1"><span class="nav-number">3.2.</span> <span class="nav-text">适用范围</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%82%A1%E6%81%AF%E7%8E%87"><span class="nav-number">4.</span> <span class="nav-text">股息率</span></a></li></ol>
+    </div>
+</div>
+        </aside>
+    
+
+    <div class="image-viewer-container">
+    <img src="">
+</div>
+
+
+    
+
+</main>
+
+
+
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/main.js"></script>
+
+<script src="/js/header-shrink.js"></script>
+
+<script src="/js/back2top.js"></script>
+
+<script src="/js/dark-light-toggle.js"></script>
+
+
+
+
+
+
+
+
+<div class="post-scripts">
+    
+        
+<script src="/js/left-side-toggle.js"></script>
+
+<script src="/js/libs/anime.min.js"></script>
+
+<script src="/js/toc.js"></script>
+
+    
+</div>
+
+
+
+</body>
+</html>

@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="keywords" content="Hexo Theme Keep">
+    <meta name="description" content="Hexo Theme Keep">
+    <meta name="author" content="ZhenYu">
+    
+    <title>
+        
+            一文教会你如何写复杂业务代码 |
+        
+        NoDDD
+    </title>
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <link rel="shortcut icon" href="/images/logo.svg">
+    
+<link rel="stylesheet" href="/css/font-awesome.min.css">
+
+    <script id="hexo-configurations">
+    let KEEP = window.KEEP || {};
+    KEEP.hexo_config = {"hostname":"noddd.cn","root":"/","language":"zh-CN"};
+    KEEP.theme_config = {"toc":{"enable":true,"number":true,"expand_all":true,"init_open":true},"style":{"primary_color":"#0066CC","avatar":"/images/avatar.svg","favicon":"/images/logo.svg","article_img_align":"left","left_side_width":"260px","content_max_width":"920px","hover":{"shadow":false,"scale":false},"first_screen":{"enable":false,"background_img":"/images/bg.svg","description":"Keep writing and Keep loving."},"scroll":{"progress_bar":{"enable":true},"percent":{"enable":true}}},"local_search":{"enable":false,"preload":false},"code_copy":{"enable":false,"style":"default"},"pjax":{"enable":false},"lazyload":{"enable":false},"version":"3.4.3"};
+    KEEP.language_ago = {"second":"%s 秒前","minute":"%s 分钟前","hour":"%s 小时前","day":"%s 天前","week":"%s 周前","month":"%s 月前","year":"%s 年前"};
+  </script>
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<body>
+<div class="progress-bar-container">
+    
+        <span class="scroll-progress-bar"></span>
+    
+
+    
+</div>
+
+
+<main class="page-container">
+
+    
+
+    <div class="page-main-content">
+
+        <div class="page-main-content-top">
+            <header class="header-wrapper">
+
+    <div class="header-content">
+        <div class="left">
+            
+            <a class="logo-title" href="/">
+                NoDDD
+            </a>
+        </div>
+
+        <div class="right">
+            <div class="pc">
+                <ul class="menu-list">
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/"
+                            >
+                                首页
+                            </a>
+                        </li>
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/tags/go"
+                            >
+                                GO
+                            </a>
+                        </li>
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/tags/DDD/"
+                            >
+                                DDD
+                            </a>
+                        </li>
+                    
+                    
+                </ul>
+            </div>
+            <div class="mobile">
+                
+                <div class="icon-item menu-bar">
+                    <div class="menu-bar-middle"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="header-drawer">
+        <ul class="drawer-menu-list">
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/">首页</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/tags/go">GO</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/tags/DDD/">DDD</a>
+                </li>
+            
+        </ul>
+    </div>
+
+    <div class="window-mask"></div>
+
+</header>
+
+
+        </div>
+
+        <div class="page-main-content-middle">
+
+            <div class="main-content">
+
+                
+                    <div class="fade-in-down-animation">
+    <div class="article-content-container">
+
+        <div class="article-title">
+            <span class="title-hover-animation">一文教会你如何写复杂业务代码</span>
+        </div>
+
+        
+            <div class="article-header">
+                <div class="avatar">
+                    <img src="/images/avatar.svg">
+                </div>
+                <div class="info">
+                    <div class="author">
+                        <span class="name">ZhenYu</span>
+                        
+                            <span class="author-label">Lv4</span>
+                        
+                    </div>
+                    <div class="meta-info">
+                        <div class="article-meta-info">
+    <span class="article-date article-meta-item">
+        <i class="fas fa-edit"></i>&nbsp;2020-11-04 16:11:34
+    </span>
+    
+    
+        <span class="article-tags article-meta-item">
+            <i class="fas fa-tags"></i>&nbsp;
+            <ul>
+                
+                    <li>
+                        <a href="/tags/%E4%BB%A3%E7%A0%81%E8%AE%BE%E8%AE%A1/">代码设计</a>&nbsp;
+                    </li>
+                
+                    <li>
+                        | <a href="/tags/%E5%A4%8D%E6%9D%82%E4%B8%9A%E5%8A%A1/">复杂业务</a>&nbsp;
+                    </li>
+                
+                    <li>
+                        | <a href="/tags/DDD/">DDD</a>&nbsp;
+                    </li>
+                
+            </ul>
+        </span>
+    
+
+    
+    
+        <span class="article-wordcount article-meta-item">
+            <i class="fas fa-file-word"></i>&nbsp;<span>3.9k 字</span>
+        </span>
+    
+    
+    
+        <span class="article-pv article-meta-item">
+            <i class="fas fa-eye"></i>&nbsp;<span id="busuanzi_value_page_pv"></span>
+        </span>
+    
+</div>
+
+                    </div>
+                </div>
+            </div>
+        
+
+        <div class="article-content markdown-body">
+            <blockquote>
+<p><strong>简介：</strong>这两天在看零售通商品域的代码。面对零售通如此复杂的业务场景，如何在架构和代码层面进行应对，是一个新课题。针对该命题，我进行了比较细致的思考和研究。结合实际的业务场景，我沉淀了一套“如何写复杂业务代码”的方法论，在此分享给大家。</p>
+</blockquote>
+<p><img src="http://pic.noddd.cn/posts/20201104165722.png" alt="v2-9e8f12ca7a005b5206ec8422388c3065_1440w"></p>
+<p>作者 | 张建飞 阿里巴巴高级技术专家</p>
+<p>了解我的人都知道，我一直在致力于应用架构和代码复杂度的治理。</p>
+<p>这两天在看零售通商品域的代码。面对零售通如此复杂的业务场景，如何在架构和代码层面进行应对，是一个新课题。针对该命题，我进行了比较细致的思考和研究。结合实际的业务场景，我沉淀了一套“如何写复杂业务代码”的方法论，在此分享给大家。</p>
+<p>我相信，同样的方法论可以复制到大部分复杂业务场景。</p>
+<h1 id="一个复杂业务的处理过程"><a href="#一个复杂业务的处理过程" class="headerlink" title="一个复杂业务的处理过程"></a>一个复杂业务的处理过程</h1><h2 id="业务背景"><a href="#业务背景" class="headerlink" title="业务背景"></a>业务背景</h2><p>简单的介绍下业务背景，零售通是给线下小店供货的 B2B 模式，我们希望通过数字化重构传统供应链渠道，提升供应链效率，为新零售助力。阿里在中间是一个平台角色，提供的是 Bsbc 中的 service 的功能。</p>
+<p><img src="http://pic.noddd.cn/posts/20201104165904.png" alt="v2-e6d37ca4a87733f328399f3bc4bfe6d2_1440w"></p>
+<p>商品力是零售通的核心所在，一个商品在零售通的生命周期如下图所示：</p>
+<p><img src="http://pic.noddd.cn/posts/20201104165950.png" alt="v2-61cad8bf2f51c09830a6bee97d05aa96_1440w"></p>
+<p>在上图中红框标识的是一个运营操作的“上架”动作，这是非常关键的业务操作。上架之后，商品就能在零售通上面对小店进行销售了。<strong>因为上架操作非常关键，所以也是商品域中最复杂的业务之一，涉及很多的数据校验和关联操作</strong>。</p>
+<p>针对上架，一个简化的业务流程如下所示：</p>
+<p><img src="http://pic.noddd.cn/posts/20201104170604.png" alt="v2-dcd4646f4596dfcc9204005e13626893_1440w"></p>
+<h2 id="过程分解"><a href="#过程分解" class="headerlink" title="过程分解"></a>过程分解</h2><p>像这么复杂的业务，我想应该没有人会写在一个 service 方法中吧。一个类解决不了，那就分治吧。</p>
+<p>说实话，能想到分而治之的工程师，已经做的不错了，至少比没有分治思维要好很多。我也见过复杂程度相当的业务，连分解都没有，就是一堆方法和类的堆砌。</p>
+<p>不过，这里存在一个问题：即很多同学过度的依赖工具或是辅助手段来实现分解。比如在我们的商品域中，类似的分解手段至少有 3 套以上，有自制的流程引擎，有依赖于数据库配置的流程处理：</p>
+<p><img src="http://pic.noddd.cn/posts/20201104171052.png" alt="v2-f9cc8593e687fd83a2c57c917538c4e8_1440w"></p>
+<p>本质上来讲，这些辅助手段做的都是一个 pipeline 的处理流程，没有其它。因此，我建议此处最好保持 KISS（Keep It Simple and Stupid），即<strong>最好是什么工具都不要用，次之是用一个极简的 Pipeline 模式，最差是使用像流程引擎这样的重方法</strong>。</p>
+<p>除非你的应用有极强的流程可视化和编排的诉求，否则我非常不推荐使用流程引擎等工具。第一，它会引入额外的复杂度，特别是那些需要持久化状态的流程引擎；第二，它会割裂代码，导致阅读代码的不顺畅。<strong>大胆断言一下，全天下估计 80% 对流程引擎的使用都是得不偿失的</strong>。</p>
+<p>回到商品上架的问题，这里问题核心是工具吗？是设计模式带来的代码灵活性吗？显然不是，<strong>问题的核心应该是如何分解问题和抽象问题</strong>，知道金字塔原理的应该知道，此处，我们可以使用结构化分解将问题解构成一个有层级的金字塔结构：</p>
+<p><img src="http://pic.noddd.cn/posts/20201104171307.png" alt="v2-94cc9920e1500bdf734ad51d8e38dfda_1440w"></p>
+<p>按照这种分解写的代码，就像一本书，目录和内容清晰明了。</p>
+<p>以商品上架为例，程序的入口是一个上架命令（OnSaleCommand）, 它由三个阶段（Phase）组成。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Command</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">OnSaleNormalItemCmdExe</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Resource</span></span><br><span class="line">    <span class="keyword">private</span> OnSaleContextInitPhase onSaleContextInitPhase;</span><br><span class="line">    <span class="meta">@Resource</span></span><br><span class="line">    <span class="keyword">private</span> OnSaleDataCheckPhase onSaleDataCheckPhase;</span><br><span class="line">    <span class="meta">@Resource</span></span><br><span class="line">    <span class="keyword">private</span> OnSaleProcessPhase onSaleProcessPhase;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Response <span class="title">execute</span><span class="params">(OnSaleNormalItemCmd cmd)</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">        OnSaleContext onSaleContext = init(cmd);</span><br><span class="line"></span><br><span class="line">        checkData(onSaleContext);</span><br><span class="line"></span><br><span class="line">        process(onSaleContext);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> Response.buildSuccess();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> OnSaleContext <span class="title">init</span><span class="params">(OnSaleNormalItemCmd cmd)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> onSaleContextInitPhase.init(cmd);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">checkData</span><span class="params">(OnSaleContext onSaleContext)</span> </span>&#123;</span><br><span class="line">        onSaleDataCheckPhase.check(onSaleContext);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">process</span><span class="params">(OnSaleContext onSaleContext)</span> </span>&#123;</span><br><span class="line">        onSaleProcessPhase.process(onSaleContext);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>每个 Phase 又可以拆解成多个步骤（Step），以 <code>OnSaleProcessPhase</code> 为例，它是由一系列 Step 组成的：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Phase</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">OnSaleProcessPhase</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Resource</span></span><br><span class="line">    <span class="keyword">private</span> PublishOfferStep publishOfferStep;</span><br><span class="line">    <span class="meta">@Resource</span></span><br><span class="line">    <span class="keyword">private</span> BackOfferBindStep backOfferBindStep;</span><br><span class="line">    <span class="comment">//省略其它step</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">process</span><span class="params">(OnSaleContext onSaleContext)</span></span>&#123;</span><br><span class="line">        SupplierItem supplierItem = onSaleContext.getSupplierItem();</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 生成OfferGroupNo</span></span><br><span class="line">        generateOfferGroupNo(supplierItem);</span><br><span class="line"></span><br><span class="line">       <span class="comment">// 发布商品</span></span><br><span class="line">        publishOffer(supplierItem);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 前后端库存绑定 backoffer域</span></span><br><span class="line">        bindBackOfferStock(supplierItem);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 同步库存路由 backoffer域</span></span><br><span class="line">        syncStockRoute(supplierItem);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 设置虚拟商品拓展字段</span></span><br><span class="line">        setVirtualProductExtension(supplierItem);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 发货保障打标 offer域</span></span><br><span class="line">        markSendProtection(supplierItem);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 记录变更内容ChangeDetail</span></span><br><span class="line">        recordChangeDetail(supplierItem);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 同步供货价到BackOffer</span></span><br><span class="line">        syncSupplyPriceToBackOffer(supplierItem);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 如果是组合商品打标，写扩展信息</span></span><br><span class="line">        setCombineProductExtension(supplierItem);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 去售罄标</span></span><br><span class="line">        removeSellOutTag(offerId);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 发送领域事件</span></span><br><span class="line">        fireDomainEvent(supplierItem);</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 关闭关联的待办事项</span></span><br><span class="line">        closeIssues(supplierItem);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>看到了吗，这就是商品上架这个复杂业务的业务流程。需要流程引擎吗？不需要；需要设计模式支撑吗？也不需要。对于这种业务流程的表达，简单朴素的组合方法模式（Composed Method）是再合适不过的了。</p>
+<p>因此，在做过程分解的时候，我建议工程师不要把太多精力放在工具上，放在设计模式带来的灵活性上。而是应该多花时间在对问题分析，结构化分解，最后通过合理的抽象，形成合适的阶段（Phase）和步骤（Step）上。</p>
+<p><img src="http://pic.noddd.cn/posts/20201104171757.png" alt="v2-ffdb2e5b4fca9492a9461b39e6ae8897_1440w"></p>
+<h2 id="过程分解后的两个问题"><a href="#过程分解后的两个问题" class="headerlink" title="过程分解后的两个问题"></a>过程分解后的两个问题</h2><p>的确，使用过程分解之后的代码，已经比以前的代码更清晰、更容易维护了。不过，还有两个问题值得我们去关注一下：</p>
+<h3 id="1、领域知识被割裂肢解"><a href="#1、领域知识被割裂肢解" class="headerlink" title="1、领域知识被割裂肢解"></a>1、领域知识被割裂肢解</h3><p>什么叫被肢解？因为我们到目前为止做的都是过程化拆解，导致没有一个聚合领域知识的地方。每个 Use Case 的代码只关心自己的处理流程，知识没有沉淀。</p>
+<p>相同的业务逻辑会在多个 Use Case 中被重复实现，导致代码重复度高，即使有复用，最多也就是抽取一个 util，代码对业务语义的表达能力很弱，从而影响代码的可读性和可理解性。</p>
+<h3 id="2、代码的业务表达能力缺失"><a href="#2、代码的业务表达能力缺失" class="headerlink" title="2、代码的业务表达能力缺失"></a>2、代码的业务表达能力缺失</h3><p>试想下，在过程式的代码中，所做的事情无外乎就是取数据 – 做计算 – 存数据，在这种情况下，要如何通过代码显性化的表达我们的业务呢？ 说实话，很难做到，因为我们缺失了模型，以及模型之间的关系。脱离模型的业务表达，是缺少韵律和灵魂的。</p>
+<p>举个例子，在上架过程中，有一个校验是检查库存的，其中对于组合品（CombineBackOffer）其库存的处理会和普通品不一样。原来的代码是这么写的：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">boolean</span> isCombineProduct = supplierItem.getSign().isCombProductQuote();</span><br><span class="line"></span><br><span class="line"><span class="comment">// supplier.usc warehouse needn&#x27;t check</span></span><br><span class="line"><span class="keyword">if</span> (WarehouseTypeEnum.isAliWarehouse(supplierItem.getWarehouseType())) &#123;</span><br><span class="line"><span class="comment">// quote warehosue check</span></span><br><span class="line"><span class="keyword">if</span> (CollectionUtil.isEmpty(supplierItem.getWarehouseIdList()) &amp;&amp; !isCombineProduct) &#123;</span><br><span class="line">    <span class="keyword">throw</span> ExceptionFactory.makeFault(ServiceExceptionCode.SYSTEM_ERROR, <span class="string">&quot;亲，不能发布Offer，请联系仓配运营人员，建立品仓关系！&quot;</span>);</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// inventory amount check</span></span><br><span class="line">Long sellableAmount = <span class="number">0L</span>;</span><br><span class="line"><span class="keyword">if</span> (!isCombineProduct) &#123;</span><br><span class="line">    sellableAmount = normalBiz.acquireSellableAmount(supplierItem.getBackOfferId(), supplierItem.getWarehouseIdList());</span><br><span class="line">&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    <span class="comment">//组套商品</span></span><br><span class="line">    OfferModel backOffer = backOfferQueryService.getBackOffer(supplierItem.getBackOfferId());</span><br><span class="line">    <span class="keyword">if</span> (backOffer != <span class="keyword">null</span>) &#123;</span><br><span class="line">        sellableAmount = backOffer.getOffer().getTradeModel().getTradeCondition().getAmountOnSale();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">if</span> (sellableAmount &lt; <span class="number">1</span>) &#123;</span><br><span class="line">    <span class="keyword">throw</span> ExceptionFactory.makeFault(ServiceExceptionCode.SYSTEM_ERROR, <span class="string">&quot;亲，实仓库存必须大于0才能发布，请确认已补货.\r[id:&quot;</span> + supplierItem.getId() + <span class="string">&quot;]&quot;</span>);</span><br><span class="line">&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>然而，如果我们在系统中引入领域模型之后，其代码会简化为如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span>(backOffer.isCloudWarehouse())&#123;</span><br><span class="line">    <span class="keyword">return</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> (backOffer.isNonInWarehouse())&#123;</span><br><span class="line">    <span class="keyword">throw</span> <span class="keyword">new</span> BizException(<span class="string">&quot;亲，不能发布Offer，请联系仓配运营人员，建立品仓关系！&quot;</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> (backOffer.getStockAmount() &lt; <span class="number">1</span>)&#123;</span><br><span class="line">    <span class="keyword">throw</span> <span class="keyword">new</span> BizException(<span class="string">&quot;亲，实仓库存必须大于0才能发布，请确认已补货.\r[id:&quot;</span> + backOffer.getSupplierItem().getCspuCode() + <span class="string">&quot;]&quot;</span>);</span><br><span class="line">&#125;  </span><br></pre></td></tr></table></figure>
+
+<p>有没有发现，使用模型的表达要清晰易懂很多，而且也不需要做关于组合品的判断了，因为我们在系统中引入了更加贴近现实的对象模型（CombineBackOffer 继承 BackOffer），通过对象的多态可以消除我们代码中的大部分的 if-else。</p>
+<p><img src="http://pic.noddd.cn/posts/20201104172348.png" alt="v2-1a3747ff957ff032e447d07aded4c777_1440w"></p>
+<h2 id="过程分解-对象模型"><a href="#过程分解-对象模型" class="headerlink" title="过程分解+对象模型"></a>过程分解+对象模型</h2><p>通过上面的案例，我们可以看到<strong>有过程分解要好于没有分解</strong>，<strong>过程分解+对象模型要好于仅仅是过程分解</strong>。对于商品上架这个 case，如果采用过程分解+对象模型的方式，最终我们会得到一个如下的系统结构：</p>
+<p><img src="http://pic.noddd.cn/posts/20201104172612.png" alt="v2-9eeedf8d588b933c7b336162490d1756_1440w"></p>
+<h2 id="写复杂业务的方法论"><a href="#写复杂业务的方法论" class="headerlink" title="写复杂业务的方法论"></a>写复杂业务的方法论</h2><p>通过上面案例的讲解，我想说，我已经交代了复杂业务代码要怎么写：<strong>即自上而下的结构化分解+自下而上的面向对象分析</strong>。</p>
+<p>接下来，让我们把上面的案例进行进一步的提炼，形成一个可落地的方法论，从而可以泛化到更多的复杂业务场景。</p>
+<h3 id="上下结合"><a href="#上下结合" class="headerlink" title="上下结合"></a>上下结合</h3><p>所谓上下结合，是指我们要<strong>结合自上而下的过程分解和自下而上的对象建模</strong>，螺旋式的构建我们的应用系统。这是一个动态的过程，两个步骤可以交替进行、也可以同时进行。</p>
+<p>这两个步骤是相辅相成的，<strong>上面的分析可以帮助我们更好的理清模型之间的关系，而下面的模型表达可以提升我们代码的复用度和业务语义表达能力</strong>。</p>
+<p>其过程如下图所示：</p>
+<p><img src="http://pic.noddd.cn/posts/20201104173723.png" alt="v2-f1c493f72182e3ca5eb947278ae92ada_1440w"></p>
+<p>使用这种上下结合的方式，我们就有可能在面对任何复杂的业务场景，都能写出干净整洁、易维护的代码。</p>
+<h3 id="能力下沉"><a href="#能力下沉" class="headerlink" title="能力下沉"></a>能力下沉</h3><p>一般来说实践 DDD 有两个过程：</p>
+<h4 id="1-套概念阶段"><a href="#1-套概念阶段" class="headerlink" title="1. 套概念阶段"></a>1. 套概念阶段</h4><p>了解了一些 DDD 的概念，然后在代码中“使用”Aggregation Root，Bounded Context，Repository 等等这些概念。更进一步，也会使用一定的分层策略。然而这种做法一般对复杂度的治理并没有多大作用。</p>
+<h4 id="2-融会贯通阶段"><a href="#2-融会贯通阶段" class="headerlink" title="2. 融会贯通阶段"></a>2. 融会贯通阶段</h4><p>术语已经不再重要，理解 DDD 的本质是统一语言、边界划分和面向对象分析的方法。</p>
+<p>大体上而言，我大概是在 1.7 的阶段，因为有一个问题一直在困扰我，就是哪些能力应该放在 Domain 层，是不是按照传统的做法，将所有的业务都收拢到 Domain 上，这样做合理吗？说实话，这个问题我一直没有想清楚。</p>
+<p>因为在现实业务中，很多的功能都是用例特有的（Use case specific）的，如果“盲目”的使用 Domain 收拢业务并不见得能带来多大的益处。相反，这种收拢会导致 Domain 层的膨胀过厚，不够纯粹，反而会影响复用性和表达能力。</p>
+<p>鉴于此，我最近的思考是我们应该采用<strong>能力下沉</strong>的策略。</p>
+<p>所谓的能力下沉，是指我们不强求一次就能设计出 Domain 的能力，也不需要强制要求把所有的业务功能都放到 Domain 层，而是采用实用主义的态度，即只对那些需要在多个场景中需要被复用的能力进行抽象下沉，而不需要复用的，就暂时放在 App 层的 Use Case 里就好了。</p>
+<p>注：Use Case 是《架构整洁之道》里面的术语，简单理解就是响应一个 Request 的处理过程。</p>
+<p>通过实践，<strong>我发现这种循序渐进的能力下沉策略，应该是一种更符合实际、更敏捷的方法。因为我们承认模型不是一次性设计出来的，而是迭代演化出来的。</strong><br>下沉的过程如下图所示，假设两个 use case 中，我们发现 uc1 的 step3 和 uc2 的 step1 有类似的功能，我们就可以考虑让其下沉到 Domain 层，从而增加代码的复用性。</p>
+<p><img src="http://pic.noddd.cn/posts/20201104174159.png" alt="v2-3d16159d951560bd0006cfe71083e67b_1440w"></p>
+<p><strong>指导下沉有两个关键指标：代码的复用性和内聚性。</strong></p>
+<p>复用性是告诉我们 When（什么时候该下沉了），即有重复代码的时候。内聚性是告诉我们 How（要下沉到哪里），功能有没有内聚到恰当的实体上，有没有放到合适的层次上（因为 Domain 层的能力也是有两个层次的，一个是 Domain Service 这是相对比较粗的粒度，另一个是 Domain 的 Model 这个是最细粒度的复用）。</p>
+<p>比如，在我们的商品域，经常需要判断一个商品是不是最小单位，是不是中包商品。像这种能力就非常有必要直接挂载在 Model 上。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">CSPU</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> String code;</span><br><span class="line">    <span class="keyword">private</span> String baseCode;</span><br><span class="line">    <span class="comment">//省略其它属性</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 单品是否为最小单位。</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">isMinimumUnit</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="keyword">return</span> StringUtils.equals(code, baseCode);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 针对中包的特殊处理</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">isMidPackage</span><span class="params">()</span></span>&#123;</span><br><span class="line">        <span class="keyword">return</span> StringUtils.equals(code, midPackageCode);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>之前，因为老系统中没有领域模型，没有 CSPU 这个实体。你会发现像判断单品是否为最小单位的逻辑是以 <code>StringUtils.equals(code, baseCode)</code> 的形式散落在代码的各个角落。这种代码的可理解性是可想而知的，至少我在第一眼看到这个代码的时候，是完全不知道什么意思。</p>
+<h2 id="业务技术要怎么做"><a href="#业务技术要怎么做" class="headerlink" title="业务技术要怎么做"></a>业务技术要怎么做</h2><p>写到这里，我想顺便回答一下很多业务技术同学的困惑，也是我之前的困惑：<strong>即业务技术到底是在做业务，还是做技术？业务技术的技术性体现在哪里？</strong></p>
+<p>通过上面的案例，我们可以看到业务所面临的复杂性并不亚于底层技术，要想写好业务代码也不是一件容易的事情。业务技术和底层技术人员唯一的区别是他们所面临的问题域不一样。</p>
+<p>业务技术面对的问题域变化更多、面对的人更加庞杂。而底层技术面对的问题域更加稳定、但对技术的要求更加深。比如，如果你需要去开发 Pandora，你就要对 Classloader 有更加深入的了解才行。</p>
+<p>但是，不管是业务技术还是底层技术人员，有一些思维和能力都是共通的。比如，<strong>分解问题的能力，抽象思维，结构化思维</strong>等等。</p>
+<p><img src="http://pic.noddd.cn/posts/20201104181018.png" alt="v2-6e0c7910d80ba7d525ccc39fe02b42f2_1440w"></p>
+<p>用我的话说就是：<strong>“做不好业务开发的，也做不好技术底层开发，反之亦然。业务开发一点都不简单，只是我们很多人把它做“简单”了</strong></p>
+<p>因此，如果从变化的角度来看，业务技术的难度一点不逊色于底层技术，其面临的挑战甚至更大。因此，我想对广大的从事业务技术开发的同学说：<strong>沉下心来，夯实自己的基础技术能力、OO 能力、建模能力… 不断提升抽象思维、结构化思维、思辨思维… 持续学习精进，写好代码。我们可以在业务技术岗做的很”技术“！</strong></p>
+<blockquote>
+<p>原文出处：<a class="link"   target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/268792808" >https://zhuanlan.zhihu.com/p/268792808<i class="fas fa-external-link-alt"></i></a></p>
+</blockquote>
+
+        </div>
+
+        
+
+        
+            <div class="article-nav">
+                
+                    <div class="article-prev">
+                        <a class="prev"
+                           rel="prev"
+                           href="/posts/554c9580-1e88-11eb-bc0f-8b63ae9b2822/"
+                        >
+                            <span class="left arrow-icon flex-center">
+                              <i class="fas fa-chevron-left"></i>
+                            </span>
+                            <span class="title flex-center">
+                                <span class="post-nav-title-item">面对复杂业务，if-else coder如何升级？</span>
+                                <span class="post-nav-item">上一篇</span>
+                            </span>
+                        </a>
+                    </div>
+                
+                
+                    <div class="article-next">
+                        <a class="next"
+                           rel="next"
+                           href="/posts/5ef57c874ea49230937578f5/"
+                        >
+                            <span class="title flex-center">
+                                <span class="post-nav-title-item">Linux磁盘I/O是怎么工作的</span>
+                                <span class="post-nav-item">下一篇</span>
+                            </span>
+                            <span class="right arrow-icon flex-center">
+                              <i class="fas fa-chevron-right"></i>
+                            </span>
+                        </a>
+                    </div>
+                
+            </div>
+        
+
+        
+    </div>
+</div>
+
+
+                
+            </div>
+
+        </div>
+
+        <div class="page-main-content-bottom">
+            <footer class="footer">
+    <div class="info-container">
+        <div class="copyright-info info-item">
+            &copy;
+            
+              <span>2020</span>&nbsp;-&nbsp;
+            
+            2022&nbsp;<i class="fas fa-heart icon-animate"></i>&nbsp;<a href="/">ZhenYu</a>
+        </div>
+        
+            <script async  src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+            <div class="website-count info-item">
+                
+                    <span id="busuanzi_container_site_uv">
+                        访问人数&nbsp;<span id="busuanzi_value_site_uv"></span>&ensp;
+                    </span>
+                
+                
+                    <span id="busuanzi_container_site_pv">
+                        总访问量&nbsp;<span id="busuanzi_value_site_pv"></span>
+                    </span>
+                
+            </div>
+        
+        <div class="theme-info info-item">
+            由 <a target="_blank" href="https://hexo.io">Hexo</a> 驱动&nbsp;|&nbsp;主题&nbsp;<a class="theme-version" target="_blank" href="https://github.com/XPoet/hexo-theme-keep">Keep v3.4.3</a>
+        </div>
+        
+            <div class="icp-info info-item"><a target="_blank" rel="nofollow" href="https://beian.miit.gov.cn">京ICP备18000555号-4</a></div>
+        
+    </div>
+</footer>
+
+        </div>
+    </div>
+
+    
+        <div class="post-tools">
+            <div class="post-tools-container">
+    <ul class="tools-list">
+        <!-- TOC aside toggle -->
+        
+            <li class="tools-item page-aside-toggle">
+                <i class="fas fa-outdent"></i>
+            </li>
+        
+
+        <!-- go comment -->
+        
+    </ul>
+</div>
+
+        </div>
+    
+
+    <div class="right-bottom-side-tools">
+        <div class="side-tools-container">
+    <ul class="side-tools-list">
+        <li class="tools-item tool-font-adjust-plus flex-center">
+            <i class="fas fa-search-plus"></i>
+        </li>
+
+        <li class="tools-item tool-font-adjust-minus flex-center">
+            <i class="fas fa-search-minus"></i>
+        </li>
+
+        <li class="tools-item tool-expand-width flex-center">
+            <i class="fas fa-arrows-alt-h"></i>
+        </li>
+
+        <li class="tools-item tool-dark-light-toggle flex-center">
+            <i class="fas fa-moon"></i>
+        </li>
+
+        <!-- rss -->
+        
+
+        
+
+        <li class="tools-item tool-scroll-to-bottom flex-center">
+            <i class="fas fa-arrow-down"></i>
+        </li>
+    </ul>
+
+    <ul class="exposed-tools-list">
+        <li class="tools-item tool-toggle-show flex-center">
+            <i class="fas fa-cog fa-spin"></i>
+        </li>
+        
+            <li class="tools-item tool-scroll-to-top flex-center">
+                <i class="arrow-up fas fa-arrow-up"></i>
+                <span class="percent"></span>
+            </li>
+        
+    </ul>
+</div>
+
+    </div>
+
+    
+        <aside class="page-aside">
+            <div class="post-toc-wrap">
+    <div class="post-toc">
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E4%B8%80%E4%B8%AA%E5%A4%8D%E6%9D%82%E4%B8%9A%E5%8A%A1%E7%9A%84%E5%A4%84%E7%90%86%E8%BF%87%E7%A8%8B"><span class="nav-number">1.</span> <span class="nav-text">一个复杂业务的处理过程</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%9A%E5%8A%A1%E8%83%8C%E6%99%AF"><span class="nav-number">1.1.</span> <span class="nav-text">业务背景</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%BF%87%E7%A8%8B%E5%88%86%E8%A7%A3"><span class="nav-number">1.2.</span> <span class="nav-text">过程分解</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%BF%87%E7%A8%8B%E5%88%86%E8%A7%A3%E5%90%8E%E7%9A%84%E4%B8%A4%E4%B8%AA%E9%97%AE%E9%A2%98"><span class="nav-number">1.3.</span> <span class="nav-text">过程分解后的两个问题</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1%E3%80%81%E9%A2%86%E5%9F%9F%E7%9F%A5%E8%AF%86%E8%A2%AB%E5%89%B2%E8%A3%82%E8%82%A2%E8%A7%A3"><span class="nav-number">1.3.1.</span> <span class="nav-text">1、领域知识被割裂肢解</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2%E3%80%81%E4%BB%A3%E7%A0%81%E7%9A%84%E4%B8%9A%E5%8A%A1%E8%A1%A8%E8%BE%BE%E8%83%BD%E5%8A%9B%E7%BC%BA%E5%A4%B1"><span class="nav-number">1.3.2.</span> <span class="nav-text">2、代码的业务表达能力缺失</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%BF%87%E7%A8%8B%E5%88%86%E8%A7%A3-%E5%AF%B9%E8%B1%A1%E6%A8%A1%E5%9E%8B"><span class="nav-number">1.4.</span> <span class="nav-text">过程分解+对象模型</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%86%99%E5%A4%8D%E6%9D%82%E4%B8%9A%E5%8A%A1%E7%9A%84%E6%96%B9%E6%B3%95%E8%AE%BA"><span class="nav-number">1.5.</span> <span class="nav-text">写复杂业务的方法论</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%8A%E4%B8%8B%E7%BB%93%E5%90%88"><span class="nav-number">1.5.1.</span> <span class="nav-text">上下结合</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%83%BD%E5%8A%9B%E4%B8%8B%E6%B2%89"><span class="nav-number">1.5.2.</span> <span class="nav-text">能力下沉</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-%E5%A5%97%E6%A6%82%E5%BF%B5%E9%98%B6%E6%AE%B5"><span class="nav-number">1.5.2.1.</span> <span class="nav-text">1. 套概念阶段</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-%E8%9E%8D%E4%BC%9A%E8%B4%AF%E9%80%9A%E9%98%B6%E6%AE%B5"><span class="nav-number">1.5.2.2.</span> <span class="nav-text">2. 融会贯通阶段</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%9A%E5%8A%A1%E6%8A%80%E6%9C%AF%E8%A6%81%E6%80%8E%E4%B9%88%E5%81%9A"><span class="nav-number">1.6.</span> <span class="nav-text">业务技术要怎么做</span></a></li></ol></li></ol>
+    </div>
+</div>
+        </aside>
+    
+
+    <div class="image-viewer-container">
+    <img src="">
+</div>
+
+
+    
+
+</main>
+
+
+
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/main.js"></script>
+
+<script src="/js/header-shrink.js"></script>
+
+<script src="/js/back2top.js"></script>
+
+<script src="/js/dark-light-toggle.js"></script>
+
+
+
+
+
+
+
+
+<div class="post-scripts">
+    
+        
+<script src="/js/left-side-toggle.js"></script>
+
+<script src="/js/libs/anime.min.js"></script>
+
+<script src="/js/toc.js"></script>
+
+    
+</div>
+
+
+
+</body>
+</html>

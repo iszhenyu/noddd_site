@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="keywords" content="Hexo Theme Keep">
+    <meta name="description" content="Hexo Theme Keep">
+    <meta name="author" content="ZhenYu">
+    
+    <title>
+        
+            面对复杂业务，if-else coder如何升级？ |
+        
+        NoDDD
+    </title>
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <link rel="shortcut icon" href="/images/logo.svg">
+    
+<link rel="stylesheet" href="/css/font-awesome.min.css">
+
+    <script id="hexo-configurations">
+    let KEEP = window.KEEP || {};
+    KEEP.hexo_config = {"hostname":"noddd.cn","root":"/","language":"zh-CN"};
+    KEEP.theme_config = {"toc":{"enable":true,"number":true,"expand_all":true,"init_open":true},"style":{"primary_color":"#0066CC","avatar":"/images/avatar.svg","favicon":"/images/logo.svg","article_img_align":"left","left_side_width":"260px","content_max_width":"920px","hover":{"shadow":false,"scale":false},"first_screen":{"enable":false,"background_img":"/images/bg.svg","description":"Keep writing and Keep loving."},"scroll":{"progress_bar":{"enable":true},"percent":{"enable":true}}},"local_search":{"enable":false,"preload":false},"code_copy":{"enable":false,"style":"default"},"pjax":{"enable":false},"lazyload":{"enable":false},"version":"3.4.3"};
+    KEEP.language_ago = {"second":"%s 秒前","minute":"%s 分钟前","hour":"%s 小时前","day":"%s 天前","week":"%s 周前","month":"%s 月前","year":"%s 年前"};
+  </script>
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<body>
+<div class="progress-bar-container">
+    
+        <span class="scroll-progress-bar"></span>
+    
+
+    
+</div>
+
+
+<main class="page-container">
+
+    
+
+    <div class="page-main-content">
+
+        <div class="page-main-content-top">
+            <header class="header-wrapper">
+
+    <div class="header-content">
+        <div class="left">
+            
+            <a class="logo-title" href="/">
+                NoDDD
+            </a>
+        </div>
+
+        <div class="right">
+            <div class="pc">
+                <ul class="menu-list">
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/"
+                            >
+                                首页
+                            </a>
+                        </li>
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/tags/go"
+                            >
+                                GO
+                            </a>
+                        </li>
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/tags/DDD/"
+                            >
+                                DDD
+                            </a>
+                        </li>
+                    
+                    
+                </ul>
+            </div>
+            <div class="mobile">
+                
+                <div class="icon-item menu-bar">
+                    <div class="menu-bar-middle"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="header-drawer">
+        <ul class="drawer-menu-list">
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/">首页</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/tags/go">GO</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/tags/DDD/">DDD</a>
+                </li>
+            
+        </ul>
+    </div>
+
+    <div class="window-mask"></div>
+
+</header>
+
+
+        </div>
+
+        <div class="page-main-content-middle">
+
+            <div class="main-content">
+
+                
+                    <div class="fade-in-down-animation">
+    <div class="article-content-container">
+
+        <div class="article-title">
+            <span class="title-hover-animation">面对复杂业务，if-else coder如何升级？</span>
+        </div>
+
+        
+            <div class="article-header">
+                <div class="avatar">
+                    <img src="/images/avatar.svg">
+                </div>
+                <div class="info">
+                    <div class="author">
+                        <span class="name">ZhenYu</span>
+                        
+                            <span class="author-label">Lv4</span>
+                        
+                    </div>
+                    <div class="meta-info">
+                        <div class="article-meta-info">
+    <span class="article-date article-meta-item">
+        <i class="fas fa-edit"></i>&nbsp;2020-11-04 18:27:26
+    </span>
+    
+    
+        <span class="article-tags article-meta-item">
+            <i class="fas fa-tags"></i>&nbsp;
+            <ul>
+                
+                    <li>
+                        <a href="/tags/%E4%BB%A3%E7%A0%81%E8%AE%BE%E8%AE%A1/">代码设计</a>&nbsp;
+                    </li>
+                
+                    <li>
+                        | <a href="/tags/%E5%A4%8D%E6%9D%82%E4%B8%9A%E5%8A%A1/">复杂业务</a>&nbsp;
+                    </li>
+                
+            </ul>
+        </span>
+    
+
+    
+    
+        <span class="article-wordcount article-meta-item">
+            <i class="fas fa-file-word"></i>&nbsp;<span>4.6k 字</span>
+        </span>
+    
+    
+    
+        <span class="article-pv article-meta-item">
+            <i class="fas fa-eye"></i>&nbsp;<span id="busuanzi_value_page_pv"></span>
+        </span>
+    
+</div>
+
+                    </div>
+                </div>
+            </div>
+        
+
+        <div class="article-content markdown-body">
+            <blockquote>
+<p><strong>简介：</strong>针对业务在不同场景下的差异，我们常常会习惯性地使用 if-else 来实现不同的业务逻辑，久而久之代码越来越难以维护。那么如何消除这些 if-else？面对复杂业务应如何思考和分析？本文分享阿里高级技术专家张建飞（Frank）关于复杂业务治理的方法论，介绍一种多维度分析问题的方法：矩阵分析法。</p>
+</blockquote>
+<p>这篇文章，是对之前我在<a class="link"   href="https://link.zhihu.com/?target=http://mp.weixin.qq.com/s?__biz=MzIzOTU0NTQ0MA==&mid=2247491068&idx=1&sn=2e724face6f7e1df5e81c377c84862a6&chksm=e92920f3de5ea9e574cdc9b183e837aab9eb032694d44f44c61b4637d8e477e0c0de831f7f51&scene=21%23wechat_redirect" >《阿里高级技术专家方法论：如何写复杂业务代码？》<i class="fas fa-external-link-alt"></i></a>说的“自上而下的结构化分解 + 自下而上的抽象建模”方法论的升级。因为在之前的方法论中，我们缺少一个多维度看问题的视角，这种维度思维的缺失，可能会导致 miss 掉一些重要的业务信息，从而使我们制定软件设计策略的时候，陷入困难。</p>
+<p>有了维度思维，我们便可以更加方面的去看清业务的全貌，更加全面的掌握业务信息，从而帮助我们更加体系化的去治理复杂性。</p>
+<h2 id="从-if-else-说起"><a href="#从-if-else-说起" class="headerlink" title="从 if-else 说起"></a>从 if-else 说起</h2><p>我经常说，我们不要做一个 if-else coder。这里的 if-else，不是说我们在 coding 的时候不能使用 if-else，而是说我们不应该简陋地用 if-else 去实现业务的分支流程，因为这样随意的代码堆砌很容易堆出一座座“屎山”。</p>
+<p>业务的差异性是 if-else 的根源。以零售通的商品业务为例。不同的处理场景，其业务逻辑实现是有差异性的。如下图所示，商品业务的差异性，主要体现在商品类型、销售方式和仓储方式的不同。</p>
+<p><img src="http://pic.noddd.cn/posts/20201104185338.png" alt="v2-9926be80071ac1d56001ce810d66cded_1440w"></p>
+<p>这三个维度上的差异组合起来，有 2 <em>3</em> 2 = 12 之多。这就是为什么在老代码中，到处可以看到 if(组合品) blabla，if(赠品) blabla，if(实仓) blabla 之类的代码。</p>
+<p>那么，要如何消除这些讨厌的 if-else 呢？我们可以考虑以下两种方式：</p>
+<ul>
+<li><strong>多态扩展</strong>：利用面向对象的多态特性，实现代码的复用和扩展。</li>
+<li><strong>代码分离</strong>：对不同的场景，使用不同的流程代码实现。这样很清晰，但是可维护性不好。</li>
+</ul>
+<h3 id="1-多态扩展"><a href="#1-多态扩展" class="headerlink" title="1. 多态扩展"></a>1. 多态扩展</h3><p>多态扩展可以有继承和组合两种方式。继承勿用多言，组合有点像策略模式，也就是把需要扩展的部分封装、抽象成需要被组合的对象，然后对其进行扩展，比如星环的能力扩展点就是这种方式。</p>
+<p>这里，我们举一个继承的例子，商品在上架的时候要检查商品的状态是否可售，普通商品（Item）检查自己就好了，而组合商品（CombineItem）需要检查每一个子商品。</p>
+<p>用过程式编码的方式，很容易就能写出如下的代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">checkSellable</span><span class="params">(Item item)</span></span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (item.isNormal())&#123;</span><br><span class="line">        item.isSellable(); </span><br><span class="line">        <span class="comment">//省略异常处理</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span>&#123;</span><br><span class="line">        List&lt;Item&gt; childItems = getChildItems();</span><br><span class="line">        childItems.forEach(childItem -&gt; childItem.isSellable()); </span><br><span class="line">        <span class="comment">//省略异常处理</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>然而，这个实现不优雅，不满足 OCP，也缺少业务语义显性化的表达。更好的做法是，我们可以把 CombineItem 和 Item 的关系通过模型显性化的表达出来。</p>
+<p><img src="http://pic.noddd.cn/posts/20201104190014.png" alt="v2-20441434294f04de00f819b11bc96d1b_1440w"></p>
+<p>这样一来，一方面模型正确的反应了实体关系，更清晰了。另一方面，我们可以利用多态来处理CombineItem和Item的差异，扩展性更好。重构后，代码会变成：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">checkSellable</span><span class="params">(Item item)</span></span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (!item.isSellable())&#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> BizException(<span class="string">&quot;商品的状态不可售，不能上架&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-代码分离"><a href="#2-代码分离" class="headerlink" title="2. 代码分离"></a>2. 代码分离</h3><p>所谓的代码分离是指，对于不同的业务场景，我们用不同的编排代码将他们分开。以商品上架为例，我们可以这样写：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">* 1. 普通商品上架</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">itemOnSale</span><span class="params">()</span></span>&#123;</span><br><span class="line">    checkItemStock();<span class="comment">//检查库存</span></span><br><span class="line">    checkItemSellable();<span class="comment">//检查可售状态</span></span><br><span class="line">    checkItemPurchaseLimit();<span class="comment">//检查限购</span></span><br><span class="line">    checkItemFreight();<span class="comment">//检查运费</span></span><br><span class="line">    checkItemCommission();<span class="comment">//检查佣金</span></span><br><span class="line">    checkItemActivityConflict();<span class="comment">//检查活动冲突</span></span><br><span class="line"></span><br><span class="line">    generateCspuGroupNo();<span class="comment">//生成单品组号</span></span><br><span class="line">    publishItem();<span class="comment">//发布商品</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">* 2. 组合商品上架</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">combineItemOnSale</span><span class="params">()</span></span>&#123;</span><br><span class="line">    checkCombineItemStock();<span class="comment">//检查库存</span></span><br><span class="line">    checkCombineItemSellable();<span class="comment">//检查可售状态</span></span><br><span class="line">    checkCombineItemPurchaseLimit();<span class="comment">//检查限购</span></span><br><span class="line">    checkCombineItemFreight();<span class="comment">//检查运费</span></span><br><span class="line">    checkCombineItemCommission();<span class="comment">//检查佣金</span></span><br><span class="line">    checkCombineItemActivityConflict();<span class="comment">//检查活动冲突</span></span><br><span class="line"></span><br><span class="line">    generateCspuGroupNo();<span class="comment">//生成单品组号</span></span><br><span class="line">    publishCombineItem();<span class="comment">//发布商品</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">* 3. 赠品上架</span></span><br><span class="line"><span class="comment">*/</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">giftItemOnSale</span><span class="params">()</span></span>&#123;</span><br><span class="line">    checkGiftItemSellable();<span class="comment">//检查可售状态</span></span><br><span class="line">    publishGiftItem();<span class="comment">//发布商品</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这种方式，当然也可以消除 if-else，彼此独立，也还清晰。但复用性是个问题。</p>
+<h3 id="3-多维分析"><a href="#3-多维分析" class="headerlink" title="3. 多维分析"></a>3. 多维分析</h3><p>细心的你可能已经发现了，在上面的案例中，普通商品和组合商品的业务流程基本是一样的。如果采用两套编排代码，有点冗余，这种重复将不利于后期代码的维护，会出现散弹式修改（一个业务逻辑要修改多处）的问题。</p>
+<p>一个极端情况是，假如普通商品和组合商品，只有 checkSellable() 不一样，其它都一样。那毫无疑问，我们使用有多态（继承关系）的 CombineItem 和 Item 来处理差异，会更加合适。</p>
+<p>而赠品上架的情况恰恰相反，它和其他商品的上架流程差异很大。反而不适合和他们合用一套流程代码，因为这样反而会增加他人的理解成本。还不如单独起一个流程来的清晰。</p>
+<p>那么，问题来了，我们什么时候要用多态来处理差异，什么时候要用代码分离来处理差异呢？</p>
+<p>接下来，是我今天要给你着重介绍的多维度分析问题的方法论之一：矩阵分析法。</p>
+<p>我们可以弄一个矩阵，纵列代表业务场景，横列代表业务动作，里面的内容代表在这个业务场景下的业务动作的详细业务流程。对于我们的商品业务，我们可以得到如下的矩阵：</p>
+<p><img src="http://pic.noddd.cn/posts/20201104204353.png" alt="v2-369b13de1bd0fbdeb0cc06e6aace5dcb_1440w"></p>
+<p>通过上面的矩阵分析，我们不难看出普通品和组合品可以复用同一套流程编排代码，而赠品和出清品的业务相对简单，更适合有一套独立的编排代码，这样的代码结构会更容易理解。</p>
+<h2 id="维度思维"><a href="#维度思维" class="headerlink" title="维度思维"></a>维度思维</h2><h3 id="1-多维度的重要性"><a href="#1-多维度的重要性" class="headerlink" title="1. 多维度的重要性"></a>1. 多维度的重要性</h3><p>上面的案例不是我编造出来的，而是我在和张文（我同事）讨论应该用哪种方式去处理业务差异的真实故事。</p>
+<p>我记得在和大学讨论完，开车回去的路上，我一直在想这个问题，然后在第二个路口等红灯的时候，突然有一个灵感冒出来。我抑制不住兴奋，一边开车，一边发消息给张文说：“我想到了一个很 NB 的方法论，能解决在‘多态扩展’和‘代码分离’之间如何做选择的问题”。</p>
+<p>其实，我知道我兴奋的不仅仅是解决了这个问题。我兴奋的是，我第一次真正领悟到了多维度思考的重要性。从而有机会从一个“单维度”生物，升级成一个“多维度”思考者。妈妈再也不用担心我被“降维打击”了 :)</p>
+<p>结构化思维有用、很有用、非常有用，只是它更多关注的是单向维度的事情。比如我要拆解业务流程，我要分解老板给我的工作安排，我要梳理测试用例，都是单向维度的。</p>
+<p>而复杂性，通常不仅仅是一个维度上的复杂，而是在多个维度上的交叉复杂性。当问题涉及的要素比较多，彼此关联关系很复杂的时候，两个维度肯定会比一个维度要来的清晰，这也是为什么说矩阵思维是比结构化思维更高层次的思维方式。</p>
+<p>实际上，我们从汉语的词汇上，也不难看出一个人的思维层级，是和他的思考维度正相关的。当我们说这个人很“轴”、“一根筋”的时候，实际上是在说他只有一维的线性思维。所以，观察事物的视角越多，维度越丰富，其思维层级也会越高。</p>
+<p><img src="http://pic.noddd.cn/posts/20201104205926.png" alt="v2-b25ee4e3180c75c6f850148f66db0b83_1440w"></p>
+<h3 id="2-无处不在的多维思考"><a href="#2-无处不在的多维思考" class="headerlink" title="2. 无处不在的多维思考"></a>2. 无处不在的多维思考</h3><p>有了这些感悟，我开始系统的整理关于多维度思考分析的资料，发现这种思考方式真是无处不在。发现的越多，我越是感慨，为什么如此重要的思维方式，我到现在才领悟到。</p>
+<h4 id="1）波士顿矩阵"><a href="#1）波士顿矩阵" class="headerlink" title="1）波士顿矩阵"></a>1）波士顿矩阵</h4><p>比如，在做产品分析的时候，有对产品发展前景进行分析的波士顿矩阵。</p>
+<p><img src="http://pic.noddd.cn/posts/20201104210253.png" alt="v2-a738f117484c5ba3b856dca4d7428bee_1440w"></p>
+<h4 id="2）订单要素分析"><a href="#2）订单要素分析" class="headerlink" title="2）订单要素分析"></a>2）订单要素分析</h4><p>当年，我在 1688 做交易下单业务的时候，有非常多的下单场景，每种场景下，买家享受的权益是不一样的（如下表所示）。我们当时也是使用了矩阵去表达这个复杂的关系，只是当时还没有想到要将其提升到方法论的高度。</p>
+<p><img src="http://pic.noddd.cn/posts/20201104210736.png" alt="v2-85e31c449c08eda38837f0399f61bc32_1440w"></p>
+<h4 id="3）数据交叉分析"><a href="#3）数据交叉分析" class="headerlink" title="3）数据交叉分析"></a>3）数据交叉分析</h4><p>在数据分析中，维度分析是非常重要的，特别是维度很多的时候，我们可以通过皮尔逊积矩相关系数，做交叉分析，从而弥补独立维度分析没法发现的一些问题。</p>
+<p><img src="http://pic.noddd.cn/posts/20201104210833.png" alt="v2-3c0125106e7d80487890aa7a0eff9709_1440w"></p>
+<p>简单相关系数矩阵</p>
+<h4 id="4）分析矩阵"><a href="#4）分析矩阵" class="headerlink" title="4）分析矩阵"></a>4）分析矩阵</h4><p>最近我碰巧看到 Alan Shalloway 写的《设计模式解析：Design Patterns Explained》，这是一本非常经典的关于 OOP 的书，里面的第十六章就是专门讲“分析矩阵”的，作者创造这个方法论的初衷也是因为业务涉及的要素太多，信息量太大，他需要一种组织海量数据的新方式。</p>
+<p><img src="http://pic.noddd.cn/posts/20201104211549.png" alt="v2-f1abbc51884f53bf291d1119b959287d_1440w"></p>
+<p>我和 Alan 的路径不一样，但是都得出了同样的结论。由此可见，这种矩阵分析的方式的确是对复杂业务进行分析的一把利器，业务场景越多，交叉关系越是复杂，越需要这样的分析。</p>
+<h4 id="5）组织阵型"><a href="#5）组织阵型" class="headerlink" title="5）组织阵型"></a>5）组织阵型</h4><p>生产关系决定生产力，对于一个管理者来说，如何有效的设置组织结构是决定团队是否能高效协作的关键。所以我们可以看到公司里面，每年都有比较大的关于组织结构和人员安排的调整。</p>
+<p>对于技术团队来说，我们习惯于按领域划分工作范围，这样做的好处是责任到人、职责清晰。然而，领域只是一个维度，我们工作通常都是以项目的形式的开展，而项目通常是贯穿多个领域的。所以，在做团队组织规划的时候，我们可以通过业务领域和业务项目两个维度去看。</p>
+<p>比如，在我负责的商品团队，我会按照如下的形式去做职责划分。</p>
+<p><img src="http://pic.noddd.cn/posts/20201104212223.png" alt="v2-b9e72102366d3a9cfe4f1f9dd2a33075_1440w"></p>
+<h4 id="6）时间维度"><a href="#6）时间维度" class="headerlink" title="6）时间维度"></a>6）时间维度</h4><p>除了工作，生活中也到处可见多维思考的重要性。</p>
+<p>比如，我们说浪费可耻，应该把盘子舔的很干净，岂不知加上时间维度之后，你当前的舔盘，后面可能要耗费更多的资源和精力去减肥，反而会造成更大的浪费。</p>
+<p>我们说代码写的丑陋，是因为要“快速”支撑业务，加上时间维度之后，这种临时的妥协，换来的是意想不到的 bug，线上故障，以及无止尽的 996。</p>
+<h4 id="7）RFM-模型"><a href="#7）RFM-模型" class="headerlink" title="7）RFM 模型"></a>7）RFM 模型</h4><p>简单的思考是“点”状的，比如舔盘、代码堆砌就是当下的“点”；好一点的思考是“线”状，加上时间线之后，不难看出“点”是有问题的；再全面一些的思考是“面”（二维）；更体系化的思考是“体”（三维）；比如，RFM 模型就是一个很不错的三维模型。可惜的是，在表达上，我们人类只能在二维的空间里去模拟三维，否则四维可能会更加有用。</p>
+<p><img src="http://pic.noddd.cn/posts/20201104212653.png" alt="v2-8e7c7c062ece516cae2767634c88d5c5_1440w"></p>
+<h2 id="复杂业务治理总结"><a href="#复杂业务治理总结" class="headerlink" title="复杂业务治理总结"></a>复杂业务治理总结</h2><p>在前言部分，我已经说过了，多维分析是对之前方法论的升级。加上以前的方法论，完整的方法论应该是“业务理解–&gt;领域建模–&gt;流程分解–&gt;多维分析”。</p>
+<p>为了方便大家理解，下面我把这些方法论做一个简单的串联和解释。</p>
+<h3 id="1-业务理解"><a href="#1-业务理解" class="headerlink" title="1. 业务理解"></a>1. 业务理解</h3><p>理解业务是所有工作的起点。首先，我们要找到业务的核心要素，理解核心概念，梳理业务流程。</p>
+<p>比如，在零售通的商品域，我们要知道什么是商品（Item），什么是单品（CSPU），什么是组合品（CombineItem）。在下单域，我们要知道订单（order）的构成要素是商品、优惠、支付。在 CRM 领域，我们要理解客户、机会、联系人、Leads 等等。</p>
+<p>这里，我想再次强调下语言的重要性，语言是我们思考的载体，就像维特根斯坦说的：“凡是能够说的事情，都能够说清楚”。</p>
+<p>你不应该放过任何一个模糊的业务概念，一定要透彻的理解它，并给与合理的命名（Ubiquitous Language）。唯有如此，我们才能更加清晰的理解业务，才能更好的开展后续的工作。</p>
+<h3 id="2-领域建模"><a href="#2-领域建模" class="headerlink" title="2. 领域建模"></a>2. 领域建模</h3><p>在软件设计中，模型是指实体，以及实体之间的联系，这里需要我们具备良好的抽象能力。能够透过庞杂的表象，找到事务的本质核心。</p>
+<p>再复杂的业务领域，其核心概念都不应该太复杂，抓住了核心，我们就抓住了主线，业务往往都是围绕着这些核心实体展开的。</p>
+<p>比如，商品域虽然很复杂，但其核心的领域模型，无外乎就如下图所示：</p>
+<p><img src="http://pic.noddd.cn/posts/20201104213550.png" alt="v2-955af06c940e16bbb82776ee37189ed3_1440w"></p>
+<h3 id="3-流程分解"><a href="#3-流程分解" class="headerlink" title="3. 流程分解"></a>3. 流程分解</h3><p>关于流程分解，在<a class="link"   href="https://link.zhihu.com/?target=http://mp.weixin.qq.com/s?__biz=MzIzOTU0NTQ0MA==&mid=2247491068&idx=1&sn=2e724face6f7e1df5e81c377c84862a6&chksm=e92920f3de5ea9e574cdc9b183e837aab9eb032694d44f44c61b4637d8e477e0c0de831f7f51&scene=21%23wechat_redirect" >《阿里高级技术专家方法论：如何写复杂业务代码？》<i class="fas fa-external-link-alt"></i></a>里面已经有非常详细的阐述，这里就不赘述了。</p>
+<p>简单来说，流程分解就是对业务过程进行详细的分解，使用结构化的方法论（先演绎、后归纳），最后形成一个金字塔结构。</p>
+<p>比如，在商品领域，有创建商品、商品上架、上架审核、商品下架、下架审核、修改商品、删除商品等一些列动作（流程），每个动作的背后都有非常复杂的业务逻辑。我们需要对这些流程进行详细的梳理，然后按步骤进行分解。最后形成一个如下的金字塔结构：</p>
+<p><img src="http://pic.noddd.cn/posts/20201104213745.png" alt="v2-eb74264445a575f1c30f31337190c740_1440w"></p>
+<h3 id="4-多维分析"><a href="#4-多维分析" class="headerlink" title="4. 多维分析"></a>4. 多维分析</h3><p>关于多维分析，我以二维的矩阵分析为例，我想我前面应该已经说清楚了。</p>
+<p>业务的复杂性主要体现在流程的复杂性和多维度要素相互关联、依赖关系上，结构化思维可以帮我们梳理流程，而矩阵思维可以帮忙我们梳理、呈现多维度关联、依赖关系。二者结合，可以更加全面的展现复杂业务的全貌。从而让我们的治理可以有的放矢、有章可循。</p>
+<p>既然是方法论，在这里，我会尝试给出一个矩阵分析的框架。试想下，如果我们的业务很简单，只有一个业务场景，没有分支流程。我们的系统不会太复杂。之所以复杂，是因为各种业务场景互相叠加、依赖、影响。</p>
+<p>因此，我们在做矩阵分析的时候，纵轴可以选择使用业务场景，横轴是备选维度，可以是受场景影响的业务流程（如文章中的商品流程矩阵图），也可以是受场景影响的业务属性（如文章中的订单组成要素矩阵图），或者任何其它不同性质的“东西”。</p>
+<p><img src="http://pic.noddd.cn/posts/20201104214115.png" alt="v2-71c46b754ff15bcbce07b516ffe04d5b_1440w"></p>
+<p>通过矩阵图，可以清晰的展现不同场景下，业务的差异性。基于此，我们可以定制满足差异性的最佳实现策略，可能是多态扩展，可能是分离的代码，也可能是其它。</p>
+<p>这就是矩阵分析的要义，其本质是一种多维度思考的方法论。</p>
+<h2 id="篇后寄语"><a href="#篇后寄语" class="headerlink" title="篇后寄语"></a>篇后寄语</h2><p>最后，我想说世界是熵增的（即万物都在缓慢的分崩离析），控制复杂度是我们这些从业者无法推卸的责任和使命。</p>
+<p>软件行业的发展才几十年，还是一门年轻的学科，软件工程就像一个刚学会走路的小孩，还很不成熟，有时还很幼稚。</p>
+<p>但毕竟还是有几十年的沉淀，还是有一些好的方法和实践可以参考，我的这些总结沉淀只是在前人的基础上，多走了一点点而已。但就是这一点点，也实属来自不易，其中冷暖，只有自己能体会。可以说，这一路走来，是一场对心力、脑力和体力的持续考验。</p>
+<p><img src="http://pic.noddd.cn/posts/20201104214637.png" alt="v2-4b78a1710b6099dfa116bfee5f7952d5_1440w"></p>
+<ul>
+<li><strong>心力</strong>是指不将就的匠心，不妥协的决心，不满足的好奇心、以及不放弃的恒心。</li>
+<li><strong>脑力</strong>是指那些必要的思维能力、学习能力、思考能力、思辨能力。</li>
+<li>之所以说“业务理解–&gt;领域建模–&gt;流程分解–&gt;多维分析”是<strong>体力</strong>，是因为实现它们就像是在做填空题，只要你愿意花时间，再复杂的业务都可以按部就班的清晰起来。</li>
+</ul>
+<p>梳理清晰了，再配合 COLA（<a class="link"   href="https://link.zhihu.com/?target=https://start.aliyun.com/" >https://start.aliyun.com/<i class="fas fa-external-link-alt"></i></a>）的指导，我们就有可能写出清晰、易读的代码，就有可能从一个 if-else coder 升级为一个 complexity conquer。</p>
+<p>而这不正是我们工程师孜孜不倦的追求吗?</p>
+<blockquote>
+<p>原文链接：<a class="link"   target="_blank" rel="noopener" href="https://zhuanlan.zhihu.com/p/266759706" >https://zhuanlan.zhihu.com/p/266759706<i class="fas fa-external-link-alt"></i></a></p>
+</blockquote>
+
+        </div>
+
+        
+
+        
+            <div class="article-nav">
+                
+                    <div class="article-prev">
+                        <a class="prev"
+                           rel="prev"
+                           href="/posts/883bb140-1f20-11eb-ae5c-cb49ba4a7dc1/"
+                        >
+                            <span class="left arrow-icon flex-center">
+                              <i class="fas fa-chevron-left"></i>
+                            </span>
+                            <span class="title flex-center">
+                                <span class="post-nav-title-item">应用架构之道：分离业务逻辑和技术细节</span>
+                                <span class="post-nav-item">上一篇</span>
+                            </span>
+                        </a>
+                    </div>
+                
+                
+                    <div class="article-next">
+                        <a class="next"
+                           rel="next"
+                           href="/posts/5a53cb60-1e75-11eb-83be-63709fbee7cb/"
+                        >
+                            <span class="title flex-center">
+                                <span class="post-nav-title-item">一文教会你如何写复杂业务代码</span>
+                                <span class="post-nav-item">下一篇</span>
+                            </span>
+                            <span class="right arrow-icon flex-center">
+                              <i class="fas fa-chevron-right"></i>
+                            </span>
+                        </a>
+                    </div>
+                
+            </div>
+        
+
+        
+    </div>
+</div>
+
+
+                
+            </div>
+
+        </div>
+
+        <div class="page-main-content-bottom">
+            <footer class="footer">
+    <div class="info-container">
+        <div class="copyright-info info-item">
+            &copy;
+            
+              <span>2020</span>&nbsp;-&nbsp;
+            
+            2022&nbsp;<i class="fas fa-heart icon-animate"></i>&nbsp;<a href="/">ZhenYu</a>
+        </div>
+        
+            <script async  src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+            <div class="website-count info-item">
+                
+                    <span id="busuanzi_container_site_uv">
+                        访问人数&nbsp;<span id="busuanzi_value_site_uv"></span>&ensp;
+                    </span>
+                
+                
+                    <span id="busuanzi_container_site_pv">
+                        总访问量&nbsp;<span id="busuanzi_value_site_pv"></span>
+                    </span>
+                
+            </div>
+        
+        <div class="theme-info info-item">
+            由 <a target="_blank" href="https://hexo.io">Hexo</a> 驱动&nbsp;|&nbsp;主题&nbsp;<a class="theme-version" target="_blank" href="https://github.com/XPoet/hexo-theme-keep">Keep v3.4.3</a>
+        </div>
+        
+            <div class="icp-info info-item"><a target="_blank" rel="nofollow" href="https://beian.miit.gov.cn">京ICP备18000555号-4</a></div>
+        
+    </div>
+</footer>
+
+        </div>
+    </div>
+
+    
+        <div class="post-tools">
+            <div class="post-tools-container">
+    <ul class="tools-list">
+        <!-- TOC aside toggle -->
+        
+            <li class="tools-item page-aside-toggle">
+                <i class="fas fa-outdent"></i>
+            </li>
+        
+
+        <!-- go comment -->
+        
+    </ul>
+</div>
+
+        </div>
+    
+
+    <div class="right-bottom-side-tools">
+        <div class="side-tools-container">
+    <ul class="side-tools-list">
+        <li class="tools-item tool-font-adjust-plus flex-center">
+            <i class="fas fa-search-plus"></i>
+        </li>
+
+        <li class="tools-item tool-font-adjust-minus flex-center">
+            <i class="fas fa-search-minus"></i>
+        </li>
+
+        <li class="tools-item tool-expand-width flex-center">
+            <i class="fas fa-arrows-alt-h"></i>
+        </li>
+
+        <li class="tools-item tool-dark-light-toggle flex-center">
+            <i class="fas fa-moon"></i>
+        </li>
+
+        <!-- rss -->
+        
+
+        
+
+        <li class="tools-item tool-scroll-to-bottom flex-center">
+            <i class="fas fa-arrow-down"></i>
+        </li>
+    </ul>
+
+    <ul class="exposed-tools-list">
+        <li class="tools-item tool-toggle-show flex-center">
+            <i class="fas fa-cog fa-spin"></i>
+        </li>
+        
+            <li class="tools-item tool-scroll-to-top flex-center">
+                <i class="arrow-up fas fa-arrow-up"></i>
+                <span class="percent"></span>
+            </li>
+        
+    </ul>
+</div>
+
+    </div>
+
+    
+        <aside class="page-aside">
+            <div class="post-toc-wrap">
+    <div class="post-toc">
+        <ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%8E-if-else-%E8%AF%B4%E8%B5%B7"><span class="nav-number">1.</span> <span class="nav-text">从 if-else 说起</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E5%A4%9A%E6%80%81%E6%89%A9%E5%B1%95"><span class="nav-number">1.1.</span> <span class="nav-text">1. 多态扩展</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E4%BB%A3%E7%A0%81%E5%88%86%E7%A6%BB"><span class="nav-number">1.2.</span> <span class="nav-text">2. 代码分离</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E5%A4%9A%E7%BB%B4%E5%88%86%E6%9E%90"><span class="nav-number">1.3.</span> <span class="nav-text">3. 多维分析</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BB%B4%E5%BA%A6%E6%80%9D%E7%BB%B4"><span class="nav-number">2.</span> <span class="nav-text">维度思维</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E5%A4%9A%E7%BB%B4%E5%BA%A6%E7%9A%84%E9%87%8D%E8%A6%81%E6%80%A7"><span class="nav-number">2.1.</span> <span class="nav-text">1. 多维度的重要性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E6%97%A0%E5%A4%84%E4%B8%8D%E5%9C%A8%E7%9A%84%E5%A4%9A%E7%BB%B4%E6%80%9D%E8%80%83"><span class="nav-number">2.2.</span> <span class="nav-text">2. 无处不在的多维思考</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1%EF%BC%89%E6%B3%A2%E5%A3%AB%E9%A1%BF%E7%9F%A9%E9%98%B5"><span class="nav-number">2.2.1.</span> <span class="nav-text">1）波士顿矩阵</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2%EF%BC%89%E8%AE%A2%E5%8D%95%E8%A6%81%E7%B4%A0%E5%88%86%E6%9E%90"><span class="nav-number">2.2.2.</span> <span class="nav-text">2）订单要素分析</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3%EF%BC%89%E6%95%B0%E6%8D%AE%E4%BA%A4%E5%8F%89%E5%88%86%E6%9E%90"><span class="nav-number">2.2.3.</span> <span class="nav-text">3）数据交叉分析</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4%EF%BC%89%E5%88%86%E6%9E%90%E7%9F%A9%E9%98%B5"><span class="nav-number">2.2.4.</span> <span class="nav-text">4）分析矩阵</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#5%EF%BC%89%E7%BB%84%E7%BB%87%E9%98%B5%E5%9E%8B"><span class="nav-number">2.2.5.</span> <span class="nav-text">5）组织阵型</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#6%EF%BC%89%E6%97%B6%E9%97%B4%E7%BB%B4%E5%BA%A6"><span class="nav-number">2.2.6.</span> <span class="nav-text">6）时间维度</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#7%EF%BC%89RFM-%E6%A8%A1%E5%9E%8B"><span class="nav-number">2.2.7.</span> <span class="nav-text">7）RFM 模型</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A4%8D%E6%9D%82%E4%B8%9A%E5%8A%A1%E6%B2%BB%E7%90%86%E6%80%BB%E7%BB%93"><span class="nav-number">3.</span> <span class="nav-text">复杂业务治理总结</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E4%B8%9A%E5%8A%A1%E7%90%86%E8%A7%A3"><span class="nav-number">3.1.</span> <span class="nav-text">1. 业务理解</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E9%A2%86%E5%9F%9F%E5%BB%BA%E6%A8%A1"><span class="nav-number">3.2.</span> <span class="nav-text">2. 领域建模</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E6%B5%81%E7%A8%8B%E5%88%86%E8%A7%A3"><span class="nav-number">3.3.</span> <span class="nav-text">3. 流程分解</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-%E5%A4%9A%E7%BB%B4%E5%88%86%E6%9E%90"><span class="nav-number">3.4.</span> <span class="nav-text">4. 多维分析</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AF%87%E5%90%8E%E5%AF%84%E8%AF%AD"><span class="nav-number">4.</span> <span class="nav-text">篇后寄语</span></a></li></ol>
+    </div>
+</div>
+        </aside>
+    
+
+    <div class="image-viewer-container">
+    <img src="">
+</div>
+
+
+    
+
+</main>
+
+
+
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/main.js"></script>
+
+<script src="/js/header-shrink.js"></script>
+
+<script src="/js/back2top.js"></script>
+
+<script src="/js/dark-light-toggle.js"></script>
+
+
+
+
+
+
+
+
+<div class="post-scripts">
+    
+        
+<script src="/js/left-side-toggle.js"></script>
+
+<script src="/js/libs/anime.min.js"></script>
+
+<script src="/js/toc.js"></script>
+
+    
+</div>
+
+
+
+</body>
+</html>

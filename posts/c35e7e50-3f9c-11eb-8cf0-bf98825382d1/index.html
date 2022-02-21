@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="keywords" content="Hexo Theme Keep">
+    <meta name="description" content="Hexo Theme Keep">
+    <meta name="author" content="ZhenYu">
+    
+    <title>
+        
+            后端开发实践系列——简单可用的CQRS编码实践 |
+        
+        NoDDD
+    </title>
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <link rel="shortcut icon" href="/images/logo.svg">
+    
+<link rel="stylesheet" href="/css/font-awesome.min.css">
+
+    <script id="hexo-configurations">
+    let KEEP = window.KEEP || {};
+    KEEP.hexo_config = {"hostname":"noddd.cn","root":"/","language":"zh-CN"};
+    KEEP.theme_config = {"toc":{"enable":true,"number":true,"expand_all":true,"init_open":true},"style":{"primary_color":"#0066CC","avatar":"/images/avatar.svg","favicon":"/images/logo.svg","article_img_align":"left","left_side_width":"260px","content_max_width":"920px","hover":{"shadow":false,"scale":false},"first_screen":{"enable":false,"background_img":"/images/bg.svg","description":"Keep writing and Keep loving."},"scroll":{"progress_bar":{"enable":true},"percent":{"enable":true}}},"local_search":{"enable":false,"preload":false},"code_copy":{"enable":false,"style":"default"},"pjax":{"enable":false},"lazyload":{"enable":false},"version":"3.4.3"};
+    KEEP.language_ago = {"second":"%s 秒前","minute":"%s 分钟前","hour":"%s 小时前","day":"%s 天前","week":"%s 周前","month":"%s 月前","year":"%s 年前"};
+  </script>
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<body>
+<div class="progress-bar-container">
+    
+        <span class="scroll-progress-bar"></span>
+    
+
+    
+</div>
+
+
+<main class="page-container">
+
+    
+
+    <div class="page-main-content">
+
+        <div class="page-main-content-top">
+            <header class="header-wrapper">
+
+    <div class="header-content">
+        <div class="left">
+            
+            <a class="logo-title" href="/">
+                NoDDD
+            </a>
+        </div>
+
+        <div class="right">
+            <div class="pc">
+                <ul class="menu-list">
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/"
+                            >
+                                首页
+                            </a>
+                        </li>
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/tags/go"
+                            >
+                                GO
+                            </a>
+                        </li>
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/tags/DDD/"
+                            >
+                                DDD
+                            </a>
+                        </li>
+                    
+                    
+                </ul>
+            </div>
+            <div class="mobile">
+                
+                <div class="icon-item menu-bar">
+                    <div class="menu-bar-middle"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="header-drawer">
+        <ul class="drawer-menu-list">
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/">首页</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/tags/go">GO</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/tags/DDD/">DDD</a>
+                </li>
+            
+        </ul>
+    </div>
+
+    <div class="window-mask"></div>
+
+</header>
+
+
+        </div>
+
+        <div class="page-main-content-middle">
+
+            <div class="main-content">
+
+                
+                    <div class="fade-in-down-animation">
+    <div class="article-content-container">
+
+        <div class="article-title">
+            <span class="title-hover-animation">后端开发实践系列——简单可用的CQRS编码实践</span>
+        </div>
+
+        
+            <div class="article-header">
+                <div class="avatar">
+                    <img src="/images/avatar.svg">
+                </div>
+                <div class="info">
+                    <div class="author">
+                        <span class="name">ZhenYu</span>
+                        
+                            <span class="author-label">Lv4</span>
+                        
+                    </div>
+                    <div class="meta-info">
+                        <div class="article-meta-info">
+    <span class="article-date article-meta-item">
+        <i class="fas fa-edit"></i>&nbsp;2020-12-16 20:46:48
+    </span>
+    
+    
+        <span class="article-tags article-meta-item">
+            <i class="fas fa-tags"></i>&nbsp;
+            <ul>
+                
+                    <li>
+                        <a href="/tags/DDD/">DDD</a>&nbsp;
+                    </li>
+                
+                    <li>
+                        | <a href="/tags/CQRS/">CQRS</a>&nbsp;
+                    </li>
+                
+            </ul>
+        </span>
+    
+
+    
+    
+        <span class="article-wordcount article-meta-item">
+            <i class="fas fa-file-word"></i>&nbsp;<span>5.2k 字</span>
+        </span>
+    
+    
+    
+        <span class="article-pv article-meta-item">
+            <i class="fas fa-eye"></i>&nbsp;<span id="busuanzi_value_page_pv"></span>
+        </span>
+    
+</div>
+
+                    </div>
+                </div>
+            </div>
+        
+
+        <div class="article-content markdown-body">
+            <p>本文只讲了一件事情：软件模型中存在读模型和写模型之分，CQRS便为此而生。</p>
+<p>20多年前，<a class="link"   target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Bertrand_Meyer" >Bertrand Meyer<i class="fas fa-external-link-alt"></i></a>在他的《<a class="link"   target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Object-Oriented_Software_Construction" >Object-Oriented Software Construction<i class="fas fa-external-link-alt"></i></a>》一书中提出了CQS（Command Query Seperation，命令查询分离）的概念，指出：</p>
+<blockquote>
+<p>Every method should either be a command that performs an action, or a query that returns data to the caller, but never both. (一个方法要么作为一个“命令”执行一个操作，要么作为一次“查询”向调用方返回数据，但两者不能共存。）</p>
+</blockquote>
+<p>这里的“命令”可以理解为更新软件状态的写操作，Martin Fowler将此称为“<a class="link"   target="_blank" rel="noopener" href="https://martinfowler.com/bliki/CommandQuerySeparation.html" >Modifier<i class="fas fa-external-link-alt"></i></a>”；而“查询”即为读操作，是无副作用的。这种分离的好处在于使程序变得更容易推理与维护，由于查询操作不会更新软件状态，在编码时我们将更加有信心。试想，如果程序中出了一个bug，如果这个bug出现在查询过程中，那么我们至少可以消除这个bug可能给软件带来脏数据的恐惧。</p>
+<p>后来，<a class="link"   target="_blank" rel="noopener" href="https://twitter.com/gregyoung?lang=en" >Greg Young<i class="fas fa-external-link-alt"></i></a>在此基础上提出了CQRS（Command Query Resposibility Segregation，命令查询职责分离），将CQS的概念从方法层面提升到了模型层面，即“命令”和“查询”分别使用不同的对象模型来表示。</p>
+<p>采用CQRS的驱动力除了从CQS那里继承来的好处之外，还旨在解决软件中日益复杂的查询问题，比如有时我们希望从不同的维度查询数据，或者需要将各种数据进行组合后返回给调用方。此时，将查询逻辑与业务逻辑糅合在一起会使软件迅速腐化，诸如逻辑混乱、可读性变差以及可扩展性降低等等一些列问题。</p>
+<h3 id="一个例子"><a href="#一个例子" class="headerlink" title="一个例子"></a>一个例子</h3><p>设想电商系统中的订单（Order）对象，一开始其对应的OrderRepository类可以简单到只包含2个方法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">OrderRepository</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="title">save</span><span class="params">(Order order)</span></span>;</span><br><span class="line">    <span class="function">Order <span class="title">byId</span><span class="params">(String id)</span></span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>在项目的演进中，你可能需要依次实现以下需求：</p>
+<ol>
+<li>查询某个Order详情，详情中不用包含Order的某些字段；</li>
+<li>查询Order列表，列表中所展示的数据比Order详情更少；</li>
+<li>根据时间、类别和金额等多种筛选条件查询Order列表；</li>
+<li>展示Order中的产品（Product）概要信息，而Product属于另一个业务实体；</li>
+<li>展示Order下单人的昵称，下单人信息属于另一个单独的账户系统，用户修改昵称之后，Order下单人昵称也需要相应更新；</li>
+<li>……</li>
+</ol>
+<p>当这些需求实现完后，你可能会发现OrderRepository和领域模型已经被各种“查询”功能淹没了。什么？OrderRepository不是给领域模型提供Order聚合根对象的吗，为什么却充斥着如此多的查询逻辑？</p>
+<p>CQRS通过单独的读模型解决上述问题，其大致的架构图如下：</p>
+<p><img src="http://pic.noddd.cn/posts/20201216205004.png" alt="1-CQRS架构"></p>
+<p>对于Command侧，主要的讲究是将业务用例建模成对应的Command对象，然后在对Command的处理流程中应用核心的业务逻辑，其中最重要的是领域模型的建模，关于此的内容请参考笔者的《<a class="link"   target="_blank" rel="noopener" href="https://insights.thoughtworks.cn/backend-development-ddd/" >领域驱动设计(DDD)编码实践<i class="fas fa-external-link-alt"></i></a>》文章，本文着重介绍Query侧的编码实践。</p>
+<p>在本文中，查询模型（Query Model）也被表达为读模型（Read Model）；命令模型（Command Model）也被表达为写模型（Write Model）。</p>
+<h3 id="CQRS实现模式概览"><a href="#CQRS实现模式概览" class="headerlink" title="CQRS实现模式概览"></a>CQRS实现模式概览</h3><h4 id="常见误解"><a href="#常见误解" class="headerlink" title="常见误解"></a>常见误解</h4><p>在网上搜索一番，你会发现很多关于CQRS的文章都将CQRS与<a class="link"   target="_blank" rel="noopener" href="https://martinfowler.com/eaaDev/EventSourcing.html" >Event Sourcing<i class="fas fa-external-link-alt"></i></a>（事件溯源）结合起来使用，这容易让人觉得采用CQRS就一定需要同时使用Event Sourcing，事实上这是一种误解。CQRS究其本意只是要求“读写模型的分离”，并未要求使用Event Sourcing；再者，Event Sourcing会极大地增加软件的复杂度，而本文追求的是“简单可用的CQRS”，因此本文将不会涉及Event Sourcing相关内容。更多内容，请参考<a class="link"   target="_blank" rel="noopener" href="https://docs.microsoft.com/en-us/dotnet/architecture/microservices/microservice-ddd-cqrs-patterns/apply-simplified-microservice-cqrs-ddd-patterns" >简化版CQRS<i class="fas fa-external-link-alt"></i></a>的文章。</p>
+<p>另外需要指出的是，读写模型的分离并不一定意味着数据存储的分离，不过在实际应用中，数据存储分离是一种常见的CQRS实践模式，在这种模式中，写模型的数据会同步到读模型数据存储中，同步过程通常通过消息机制完成，在DDD场景下，消息通常承载的是领域事件（Domain Event）。</p>
+<h4 id="查询模型的数据来源"><a href="#查询模型的数据来源" class="headerlink" title="查询模型的数据来源"></a>查询模型的数据来源</h4><p>无论是单体还是微服务，所读数据的唯一正确来源（Single Source of Truth）最终都来自于业务实体（Entity）对象（比如DDD中的聚合根），基于此，所读数据的来源形式大致分为以下几种：</p>
+<ul>
+<li>所读数据来源于同一个进程空间的单个实体（后文简称“<strong>单进程单实体</strong>”），这里的进程空间指某个单体应用或者单个微服务；</li>
+<li>所读数据来源于同一个进程空间中的多个实体（后文简称“<strong>单进程跨实体</strong>”）；</li>
+<li>所读数据来源于不同进程空间中的多个实体（后文简称“<strong>跨进程跨实体</strong>”）。</li>
+</ul>
+<p><img src="http://pic.noddd.cn/posts/20201216205240.png" alt="2"></p>
+<h4 id="读写模型的分离形式"><a href="#读写模型的分离形式" class="headerlink" title="读写模型的分离形式"></a>读写模型的分离形式</h4><p>CQRS中的读写分离存在2个层次，一层是代码中的模型是否需要分离，另一层是数据存储是否需要分离，总结下来有以下几种：</p>
+<ul>
+<li><strong>共享存储/共享模型：</strong>读写模型共享数据存储（即同一个数据库），同时也共享代码模型，数查询据通过模型转换后返回给调用方，事实上这不能算CQRS，但是对于很多中小型项目而言已经足够；</li>
+<li><strong>共享存储/分离模型：</strong>共享数据存储，代码中分别建立写模型和读模型，读模型通过最适合于查询的方式进行建模；</li>
+<li><strong>分离存储/分离模型：</strong>数据存储和代码模型都是分离的，这种方式通常用于需要聚合查询多个子系统的情况，比如微服务系统。</li>
+</ul>
+<p><img src="http://pic.noddd.cn/posts/20201216205724.png" alt="3 (1)"></p>
+<p>将以上“查询模型的数据来源”与“读写模型的分离形式”相组合，我们可以得到以下不同的CQRS模式及其适用范围：</p>
+<table>
+<thead>
+<tr>
+<th align="left">数据来源形式</th>
+<th align="left">模型分离形式</th>
+<th align="left">适用范围</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">单进程单实体</td>
+<td align="left">共享存储/共享模型</td>
+<td align="left">其实算不上CQRS，但对于很多中小型项目已经足够</td>
+</tr>
+<tr>
+<td align="left">单进程单实体</td>
+<td align="left">共享存储/分离模型</td>
+<td align="left">适用于单实体查询比较复杂或者对查询效率要求较高的场景</td>
+</tr>
+<tr>
+<td align="left">单进程单实体</td>
+<td align="left">不同存储/分离模型</td>
+<td align="left">适用于对单个实体的查询非常复杂的场景</td>
+</tr>
+<tr>
+<td align="left">单进程跨实体</td>
+<td align="left">共享存储/共享模型</td>
+<td align="left">不适用</td>
+</tr>
+<tr>
+<td align="left">单进程跨实体</td>
+<td align="left">共享存储/分离模型</td>
+<td align="left">适用于查询比较复杂的场景，比如需要做多表join操作</td>
+</tr>
+<tr>
+<td align="left">单进程跨实体</td>
+<td align="left">分离存储/分离模型</td>
+<td align="left">适用于复杂查询或者对查询效率要求较高的情况</td>
+</tr>
+<tr>
+<td align="left">跨进程跨实体</td>
+<td align="left">共享存储/共享模型</td>
+<td align="left">不适用</td>
+</tr>
+<tr>
+<td align="left">跨进程跨实体</td>
+<td align="left">共享存储/分离模型</td>
+<td align="left">不适用</td>
+</tr>
+<tr>
+<td align="left">跨进程跨实体</td>
+<td align="left">分离存储/分离模型</td>
+<td align="left">主要用于微服务中需要对多个服务进行聚合查询的场景</td>
+</tr>
+</tbody></table>
+<p>总结下来，有以下几种常见做法：</p>
+<ul>
+<li>单进程单实体 + 共享存储/共享模型</li>
+<li>单进程单实体 + 共享存储/分离模型</li>
+<li>单进程跨实体 + 共享存储/分离模型</li>
+<li>单进程跨实体 + 分离存储/分离模型</li>
+<li>跨进程跨实体 + 分离存储/分离模型</li>
+</ul>
+<p>接下来，针对以上几种常见做法，本文将依次给出编码示例。</p>
+<h3 id="CQRS编码实践"><a href="#CQRS编码实践" class="headerlink" title="CQRS编码实践"></a>CQRS编码实践</h3><p>本文的示例是一个简单的电商系统，其中包含以下微服务：</p>
+<table>
+<thead>
+<tr>
+<th align="left">服务</th>
+<th align="left">用途</th>
+<th align="left">所含实体</th>
+<th align="left">Git地址</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">订单服务</td>
+<td align="left">用于用户下单</td>
+<td align="left">Order</td>
+<td align="left"><a class="link"   target="_blank" rel="noopener" href="https://github.com/e-commerce-sample/ecommerce-order-service" >ecommerce-order-service<i class="fas fa-external-link-alt"></i></a></td>
+</tr>
+<tr>
+<td align="left">订单查询服务</td>
+<td align="left">用于订单的CQRS查询操作</td>
+<td align="left">无</td>
+<td align="left"><a class="link"   target="_blank" rel="noopener" href="https://github.com/e-commerce-sample/ecommerce-order-query-service" >ecommerce-order-query-service<i class="fas fa-external-link-alt"></i></a></td>
+</tr>
+<tr>
+<td align="left">产品服务</td>
+<td align="left">用于管理/展示产品信息</td>
+<td align="left">Product Category(产品目录)</td>
+<td align="left"><a class="link"   target="_blank" rel="noopener" href="https://github.com/e-commerce-sample/ecommerce-product-service" >ecommerce-product-service<i class="fas fa-external-link-alt"></i></a></td>
+</tr>
+<tr>
+<td align="left">库存服务</td>
+<td align="left">用于管理产品对应的库存</td>
+<td align="left">Inventory</td>
+<td align="left"><a class="link"   target="_blank" rel="noopener" href="https://github.com/e-commerce-sample/ecommerce-inventory-service" >ecommerce-inventory-service<i class="fas fa-external-link-alt"></i></a></td>
+</tr>
+</tbody></table>
+<p>示例代码请参考：<br><a class="link"   target="_blank" rel="noopener" href="https://github.com/e-commerce-sample" >https://github.com/e-commerce-sample<i class="fas fa-external-link-alt"></i></a></p>
+<p>请注意，本文的示例电商项目只是一个虚构出来的简单项目，仅仅用于演示CQRS的各种编码模式，并不具备实际参考价值。</p>
+<p>针对以上各种CQRS模式组合，本文将使用电商系统中的以下业务用例进行演示：</p>
+<table>
+<thead>
+<tr>
+<th align="left">CQRS模式</th>
+<th align="left">业务查询用例</th>
+<th align="left">所属服务</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">单进程单实体 + 共享存储/共享模型</td>
+<td align="left">Inventory详情查询</td>
+<td align="left">库存服务</td>
+</tr>
+<tr>
+<td align="left">单进程单实体 + 共享存储/分离模型</td>
+<td align="left">Product摘要查询</td>
+<td align="left">产品服务</td>
+</tr>
+<tr>
+<td align="left">单进程跨实体 + 共享存储/分离模型</td>
+<td align="left">Product详情查询（包含Category信息）</td>
+<td align="left">产品服务</td>
+</tr>
+<tr>
+<td align="left">单进程跨实体 + 分离存储/分离模型</td>
+<td align="left">Product详情查询（包含Category信息）</td>
+<td align="left">产品服务</td>
+</tr>
+<tr>
+<td align="left">跨进程跨实体 + 分离存储/分离模型</td>
+<td align="left">Order详情查询（包含Product信息）</td>
+<td align="left">订单查询服务</td>
+</tr>
+</tbody></table>
+<h4 id="1-单进程单实体-共享存储-共享模型"><a href="#1-单进程单实体-共享存储-共享模型" class="headerlink" title="1. 单进程单实体 + 共享存储/共享模型"></a>1. 单进程单实体 + 共享存储/共享模型</h4><p>对于简单的单体或者微服务应用，这种方式是最自然最直接的方式，事实上我们并不需要太多设计上的思考便能想到这种方式。在这种方式中，存在单个领域实体模型同时用于读写操作，在向调用方返回查询数据时，需要针对性地对领域模型进行转换，转换的目的在于：</p>
+<ul>
+<li>调用方所需的数据模型与领域模型可能不一致；</li>
+<li>有些敏感信息是不能返回给调用方的，需要屏蔽；</li>
+<li>从设计上讲，领域模型不能直接返回给调用方，否则会产生领域模型的泄露</li>
+<li>将领域模型直接返回给调用方会在领域模型与对外接口间产生强耦合，不利于领域模型自身的演进。</li>
+</ul>
+<p><img src="http://pic.noddd.cn/posts/20201216205829.png" alt="1-单进程单实体-共享存储共享模型"></p>
+<p>这里，我们以“库存(Inventory)详情查询”为例进行演示，<code>Inventory</code>领域模型定义如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Inventory</span></span>&#123;</span><br><span class="line">    <span class="keyword">private</span> String id;</span><br><span class="line">    <span class="keyword">private</span> String productId;</span><br><span class="line">    <span class="keyword">private</span> String productName;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> remains;</span><br><span class="line">    <span class="keyword">private</span> Instant createdAt;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>在获取Inventory详情时，我们并不需要返回领域模型中的<code>productId</code>和<code>createdAt</code>字段，于是在<code>Inventory</code>中创建相应的转换方法如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> InventoryRepresentation <span class="title">toRepresentation</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">new</span> InventoryRepresentation(<span class="keyword">this</span>.id,</span><br><span class="line">            <span class="keyword">this</span>.productName,</span><br><span class="line">            <span class="keyword">this</span>.remains);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这里的<code>InventoryRepresentation</code>即表示读模型，后缀<code>Representation</code>取自REST中的“R”，表示读模型是一种数据展现，下文将沿用这种命名形式。在<code>InventoryApplicationService</code>服务中返回<code>InventoryRepresentation</code>:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> InventoryRepresentation <span class="title">byId</span><span class="params">(String inventoryId)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">return</span> repository</span><br><span class="line">            .byId(inventoryId)</span><br><span class="line">            .toRepresentation();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>值得一提的是，在查询Inventory时，我们使用了应用服务（ApplicationService）-<code>InventoryApplicationService</code>，此时的<code>InventoryApplicationService</code>同时承担了读操作和写操作的业务入口，在实践中也可以将此二者分离开来，即让<code>InventoryApplicationService</code>只负责写操作，而另行创建<code>InventoryRepresentationService</code>专门用于读操作。</p>
+<p>另外，抛开CQRS，为了保证每一个聚合根实体自身的完备性，即便在没有调用方查询的情况下，笔者也建议为每一个聚合根提供一个<code>Representation</code>并对外暴露查询接口。因此每一个聚合根中都会有一个<code>toRepresentation()</code>方法，该方法仅仅返回当前聚合根的状态，而不会关联其他实体对象（比如下文提到的“单进程跨实体”）。</p>
+<h4 id="2-单进程单实体-共享存储-分离模型"><a href="#2-单进程单实体-共享存储-分离模型" class="headerlink" title="2. 单进程单实体 + 共享存储/分离模型"></a>2. 单进程单实体 + 共享存储/分离模型</h4><p>有时，即便是对于单个实体，其查询也会变得复杂，为了维护读写过程彼此的清晰性，我们可以对读模型和写模型分别建模，事实上这也是CQRS的本意。</p>
+<p><img src="http://pic.noddd.cn/posts/20201216205910.png" alt="2-单进程单实体-共享存储分离模型"></p>
+<p>在Product服务中，需要返回Product的摘要信息，并对返回列表进行分页处理，为此独立于ApplicationService创建<code>ProductRepresentationService</code>，直接从数据库读取数据构建<code>ProductSummaryRepresentation</code>。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Transactional(readOnly = true)</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> PagedResource&lt;ProductSummaryRepresentation&gt; <span class="title">listProducts</span><span class="params">(<span class="keyword">int</span> pageIndex, <span class="keyword">int</span> pageSize)</span> </span>&#123;</span><br><span class="line">    MapSqlParameterSource parameters = <span class="keyword">new</span> MapSqlParameterSource();</span><br><span class="line">    parameters.addValue(<span class="string">&quot;limit&quot;</span>, pageSize);</span><br><span class="line">    parameters.addValue(<span class="string">&quot;offset&quot;</span>, (pageIndex - <span class="number">1</span>) * pageSize);</span><br><span class="line"></span><br><span class="line">    List&lt;ProductSummaryRepresentation&gt; products = jdbcTemplate.query(SELECT_SQL, parameters,</span><br><span class="line">            (rs, rowNum) -&gt; <span class="keyword">new</span> ProductSummaryRepresentation(rs.getString(<span class="string">&quot;ID&quot;</span>),</span><br><span class="line">                    rs.getString(<span class="string">&quot;NAME&quot;</span>),</span><br><span class="line">                    rs.getBigDecimal(<span class="string">&quot;PRICE&quot;</span>)));</span><br><span class="line"></span><br><span class="line">    <span class="keyword">int</span> total = jdbcTemplate.queryForObject(COUNT_SQL, newHashMap(), Integer.class);</span><br><span class="line">    <span class="keyword">return</span> PagedResource.of(total, pageIndex, products);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这里，我们绕过了领域模型<code>Product</code>，也绕过了其对应的<code>ProductRepository</code>，以最快速的方式从数据库中直接获取数据。</p>
+<h4 id="3-单进程跨实体-共享存储-分离模型"><a href="#3-单进程跨实体-共享存储-分离模型" class="headerlink" title="3. 单进程跨实体 + 共享存储/分离模型"></a>3. 单进程跨实体 + 共享存储/分离模型</h4><p>既然单个实体都有必要使用分离模型，那么在同一个进程空间中的跨实体查询更有理由使用分离模型的形式。对于简单形式跨实体查询，还用不着使用分离的存储，只需要做一些join联合查询即可。</p>
+<p><img src="http://pic.noddd.cn/posts/20201216205950.png" alt="3-单进程跨实体-共享存储分离模型"></p>
+<p>在Product服务中，存在<code>Product</code>和<code>Category</code>两个聚合根对象， 在查询<code>Product</code>时，我们希望一并带上<code>Category</code>的信息，为此创建ProductWithCategoryRepresentation如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Value</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ProductWithCategoryRepresentation</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> String id;</span><br><span class="line">    <span class="keyword">private</span> String name;</span><br><span class="line">    <span class="keyword">private</span> String categoryId;</span><br><span class="line">    <span class="keyword">private</span> String categoryName;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>在<code>ProductRepresentationService</code>中，直接从数据库获取<code>Product</code>和<code>Category</code>数据，此时需要对<code>PRODUCT</code>和<code>CATEGORY</code>两张表做join操作：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Transactional(readOnly = true)</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> ProductWithCategoryRepresentation <span class="title">productWithCategory</span><span class="params">(String id)</span> </span>&#123;</span><br><span class="line">    String sql = <span class="string">&quot;SELECT PRODUCT.ID, PRODUCT.NAME, CATEGORY.ID AS CATEGORY_ID, CATEGORY.NAME AS CATEGORY_NAME FROM PRODUCT JOIN CATEGORY ON PRODUCT.CATEGORY_ID=CATEGORY.ID WHERE PRODUCT.ID=:productId;&quot;</span>;</span><br><span class="line">    <span class="keyword">return</span> jdbcTemplate.queryForObject(sql, of(<span class="string">&quot;productId&quot;</span>, id),</span><br><span class="line">            (rs, rowNum) -&gt; <span class="keyword">new</span> ProductWithCategoryRepresentation(rs.getString(<span class="string">&quot;ID&quot;</span>),</span><br><span class="line">                    rs.getString(<span class="string">&quot;NAME&quot;</span>),</span><br><span class="line">                    rs.getString(<span class="string">&quot;CATEGORY_ID&quot;</span>),</span><br><span class="line">                    rs.getString(<span class="string">&quot;CATEGORY_NAME&quot;</span>)));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>需要注意的是，如果join的级联太多，那么会大大影响查询的效率，并且使程序变得更加复杂。一般来讲，如果join次数达到了3次及其以上，建议考虑采用分离存储的形式。</p>
+<h4 id="4-单进程跨实体-分离存储-分离模型"><a href="#4-单进程跨实体-分离存储-分离模型" class="headerlink" title="4. 单进程跨实体 + 分离存储/分离模型"></a>4. 单进程跨实体 + 分离存储/分离模型</h4><p>依然以返回<code>ProductWithCategoryRepresentation</code>为例，假设我们认为先前的join操作太复杂或者太低效了，需要采用专门的数据库来简化查询提升效率。</p>
+<p><img src="http://pic.noddd.cn/posts/20201216210023.png" alt="4-单进程跨实体-分离存储分离模型"></p>
+<p>为此创建单独的读模型数据库表<code>PRODUCT_WITH_CATEGORY</code>：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">CREATE</span> <span class="keyword">TABLE</span> PRODUCT_WITH_CATEGORY</span><br><span class="line">(</span><br><span class="line">  PRODUCT_ID    <span class="type">VARCHAR</span>(<span class="number">32</span>)  <span class="keyword">NOT</span> <span class="keyword">NULL</span>,</span><br><span class="line">  PRODUCT_NAME  <span class="type">VARCHAR</span>(<span class="number">100</span>) <span class="keyword">NOT</span> <span class="keyword">NULL</span>,</span><br><span class="line">  CATEGORY_ID   <span class="type">VARCHAR</span>(<span class="number">32</span>)  <span class="keyword">NOT</span> <span class="keyword">NULL</span>,</span><br><span class="line">  CATEGORY_NAME <span class="type">VARCHAR</span>(<span class="number">100</span>) <span class="keyword">NOT</span> <span class="keyword">NULL</span>,</span><br><span class="line">  <span class="keyword">PRIMARY</span> KEY (PRODUCT_ID)</span><br><span class="line">) <span class="type">CHARACTER</span> <span class="keyword">SET</span> utf8mb4</span><br><span class="line">  <span class="keyword">COLLATE</span> utf8mb4_unicode_ci;</span><br></pre></td></tr></table></figure>
+
+<p>读写同步通常通过领域事件的形式完成，由于是在同一个进程空间中，因此读写同步相比于跨进程的同步来说，可以有更多的选择：</p>
+<ul>
+<li>使用进程内事件机制（比如Guava的EventBus），在与写操作相同的事务中同步，这种方式的好处是可以保证写操作与同步操作的原子性进而确保读写间的数据一致性，缺点是在写操作过程中存在额外的数据库同步开销进而增加了写操作的延迟时间；</li>
+<li>使用进程内事件机制，独立事务同步（比如Guava的AsyncEventBus），这种方式的好处是写操作和同步操作彼此独立互不影响，缺点是无法保证二者的原子性进而可能使系统产生脏数据；</li>
+<li>使用独立的消息机制（比如RabbitMQ/Kafka等），独立事务同步，可以将查询功能分离为单独的子系统，事实上这种方式已经与“跨进程跨实体 + 分离存储/分离模型”相似，因此请参考“5. 跨进程跨实体 + 分离存储/分离模型”小节。</li>
+</ul>
+<h4 id="5-跨进程跨实体-分离存储-分离模型"><a href="#5-跨进程跨实体-分离存储-分离模型" class="headerlink" title="5. 跨进程跨实体 + 分离存储/分离模型"></a>5. 跨进程跨实体 + 分离存储/分离模型</h4><p>这种方式在微服务中最常见，因为微服务系统首先是多进程的，每个服务都内聚性地管理自身的聚合根对象，另外，微服务的数据存储通常也是独占式的，意味着在微服务系统中数据存储一定是分离的，在这种场景下，跨微服务之间的查询通常采用“<a class="link"   target="_blank" rel="noopener" href="https://microservices.io/patterns/data/api-composition.html" >API Compositon<i class="fas fa-external-link-alt"></i></a>”模式或者本文的CQRS模式。</p>
+<p>在”跨进程跨实体 + 分离存储/分离模型”中，存在一个单独的查询服务用于CQRS的读操作，查询所需数据通常通过事件机制从不同的其他业务服务中同步而来，读操作所返回的数据通过API Gateway或者BFF向外暴露，示意图如下：</p>
+<p><img src="http://pic.noddd.cn/posts/20201216210057.png" alt="5-跨进程跨实体-分离存储分离模型"></p>
+<p>在本文的示例电商项目中，需要在查询Order的时候同时带上Product的信息，但是由于Order和Product分别属于不同的服务，为此创建<code>ecommerce-order-query-service</code>查询服务，该服务负责接收Order和Product服务发布的领域事件以同步其自身的读模型<code>OrderWithProductRepresentation</code>。</p>
+<p>在<code>ecommerce-order-query-service</code>服务中，在接收到<code>OrderEvent</code>事件后，<code>OrderQueryRepresentationService</code>负责分别调用Order和Product的接口完成数据同步：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">cqrsSync</span><span class="params">(OrderEvent event)</span> </span>&#123;</span><br><span class="line">    String orderUrl = <span class="string">&quot;http://localhost:8080/orders/&#123;id&#125;&quot;</span>;</span><br><span class="line">    String productUrl = <span class="string">&quot;http://localhost:8082/products/&#123;id&#125;&quot;</span>;</span><br><span class="line"></span><br><span class="line">    OrderRepresentation orderRepresentation = restTemplate.getForObject(orderUrl, OrderRepresentation.class, event.getOrderId());</span><br><span class="line"></span><br><span class="line">    List&lt;Product&gt; products = orderRepresentation.getItems().stream().map(orderItem -&gt; &#123;</span><br><span class="line">        ProductRepresentation productRepresentation = restTemplate.getForObject(productUrl,</span><br><span class="line">                ProductRepresentation.class,</span><br><span class="line">                orderItem.getProductId());</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> Product(productRepresentation.getId(),</span><br><span class="line">                productRepresentation.getName(),</span><br><span class="line">                productRepresentation.getDescription());</span><br><span class="line">    &#125;).collect(Collectors.toList());</span><br><span class="line"></span><br><span class="line">    OrderWithProductRepresentation order = <span class="keyword">new</span> OrderWithProductRepresentation(</span><br><span class="line">            orderRepresentation.getId(),</span><br><span class="line">            orderRepresentation.getTotalPrice(),</span><br><span class="line">            orderRepresentation.getStatus(),</span><br><span class="line">            orderRepresentation.getCreatedAt(),</span><br><span class="line">            orderRepresentation.getAddress(),</span><br><span class="line">            products</span><br><span class="line"></span><br><span class="line">    );</span><br><span class="line">    dao.save(order);</span><br><span class="line">    log.info(<span class="string">&quot;CQRS synced order &#123;&#125;.&quot;</span>,orderId);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>在本例中，<code>ecommerce-order-query-service</code>查询服务使用了关系型数据库，但在实际应用中应该根据项目所需选择适当的数据存储机制。例如，对于海量数据的查询，可以选择诸如MongoDB或者Cassandra之类的NoSQL数据库；而对于需要进行全文搜索的场景，可以采用Elasticsearch等。</p>
+<p>事实上，在接收并处理事件时，存在2中风格，一种是本例中的仅将事件作为消息通知，然后调用其他服务的API接口完成同步，另一种是直接使用事件所携带的数据进行同步，更多关于这2种风格的比较，请参考笔者的《<a class="link"   target="_blank" rel="noopener" href="https://insights.thoughtworks.cn/back-end-development-practice-series-3/" >事件驱动架构(EDA)编码实践<i class="fas fa-external-link-alt"></i></a>》文章。</p>
+<p>事件驱动架构总是意味着异步，它将给软件带来以下方面的影响：</p>
+<ul>
+<li>读模型和写模型之间不再是强事务一致性，而是<a class="link"   target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Eventual_consistency" >最终一致性<i class="fas fa-external-link-alt"></i></a>。</li>
+<li>从用户体验上讲，用户发起操作之后将不再立即返回结果数据，此时要么需要调用方（比如前端）进行轮询查询，要么需要在用户体验上<a class="link"   target="_blank" rel="noopener" href="http://danielwhittaker.me/2014/10/27/4-ways-handle-eventual-consistency-ui/" >做些权衡<i class="fas fa-external-link-alt"></i></a>，比如使用确认页面延迟用户对查询数据的获取。</li>
+</ul>
+<h3 id="关于Representation对象的命名"><a href="#关于Representation对象的命名" class="headerlink" title="关于Representation对象的命名"></a>关于Representation对象的命名</h3><p>命名总是一件令开发者头疼的事情，特别对于需要返回多种数据形式的查询接口来说。为此，笔者自己采用以下方式命名不同的<code>Representation</code>对象，以Order为例：</p>
+<ul>
+<li><strong><code>OrderRepresentation</code>：</strong>仅仅包含聚合根实体自身状态详情，一种常见的形式是通过<code>Order.toRepresentation()</code>方法获得</li>
+<li><strong><code>OrderSummaryRepresentation</code>：</strong>用于返回聚合根的列表，仅仅包含Order本身的状态</li>
+<li><strong><code>OrderWithProductRepresentation</code>：</strong>用于返回带有Product数据的Order详情</li>
+<li><strong><code>OrderWithProductSummaryRepresentation</code>：</strong>用于返回带有Product数据的Order列表</li>
+</ul>
+<p>当然，命名是一件见仁见智的事情，以上也绝非最佳方式，不过总的原则是要一致、清晰、可读。</p>
+<h3 id="什么时候该采用CQRS"><a href="#什么时候该采用CQRS" class="headerlink" title="什么时候该采用CQRS"></a>什么时候该采用CQRS</h3><p>事实上，不管是<a class="link"   target="_blank" rel="noopener" href="https://martinfowler.com/" >Martin Fowler<i class="fas fa-external-link-alt"></i></a>、<a class="link"   target="_blank" rel="noopener" href="http://udidahan.com/" >Udi Dahan<i class="fas fa-external-link-alt"></i></a>还是<a class="link"   target="_blank" rel="noopener" href="https://microservices.io/about.html" >Chris Richardson<i class="fas fa-external-link-alt"></i></a>，都提醒到需要慎用CQRS，因为它会带来额外的复杂性；而另有人（比如<a class="link"   target="_blank" rel="noopener" href="https://lostechies.com/gabrielschenker/2015/04/07/cqrs-revisited/" >Gabriel Schenker<i class="fas fa-external-link-alt"></i></a>）却提到，当前很多软件逻辑复杂性能低下恰恰是因为没有选择CQRS造成的。</p>
+<p>的确，不管在架构层面还是编码层面，采用CQRS的都会增加程序的复杂度和代码量，不过，这种复杂性可以在很大程度上被其所带来的“条理性”所抵消，“有条理的多”恰恰是为了简单。因此，当你的项目正在承受本文一开始的“一个例子”小节中所提到的“痛楚”时，不妨试一试本文提到的几种简化版的CQRS实践。</p>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>本文本着“简单可用的CQRS”的目的讲到了不同的CQRS实现模式，其中包含如何在单体和微服务架构中进行不同的CQRS落地实践。可以看出，CQRS并不像人们想象中的那么难，通过适当的设计与选择，CQRS可以在很大程度上将程序架构变得更加的有条理，进而使软件项目在CQRS上的付出变成一件值得做的事情。</p>
+<blockquote>
+<p>原文链接：<a class="link"   target="_blank" rel="noopener" href="https://insights.thoughtworks.cn/backend-development-cqrs/" >https://insights.thoughtworks.cn/backend-development-cqrs/<i class="fas fa-external-link-alt"></i></a></p>
+</blockquote>
+
+        </div>
+
+        
+
+        
+            <div class="article-nav">
+                
+                    <div class="article-prev">
+                        <a class="prev"
+                           rel="prev"
+                           href="/posts/3a359760-4a4d-11eb-b848-ef6a60c4efb7/"
+                        >
+                            <span class="left arrow-icon flex-center">
+                              <i class="fas fa-chevron-left"></i>
+                            </span>
+                            <span class="title flex-center">
+                                <span class="post-nav-title-item">阿里技术专家详解DDD系列第四弹-领域层设计规范</span>
+                                <span class="post-nav-item">上一篇</span>
+                            </span>
+                        </a>
+                    </div>
+                
+                
+                    <div class="article-next">
+                        <a class="next"
+                           rel="next"
+                           href="/posts/3cc84590-3edb-11eb-bbaa-afec0a4a1fae/"
+                        >
+                            <span class="title flex-center">
+                                <span class="post-nav-title-item">后端开发实践系列——事件驱动架构(EDA)编码实践</span>
+                                <span class="post-nav-item">下一篇</span>
+                            </span>
+                            <span class="right arrow-icon flex-center">
+                              <i class="fas fa-chevron-right"></i>
+                            </span>
+                        </a>
+                    </div>
+                
+            </div>
+        
+
+        
+    </div>
+</div>
+
+
+                
+            </div>
+
+        </div>
+
+        <div class="page-main-content-bottom">
+            <footer class="footer">
+    <div class="info-container">
+        <div class="copyright-info info-item">
+            &copy;
+            
+              <span>2020</span>&nbsp;-&nbsp;
+            
+            2022&nbsp;<i class="fas fa-heart icon-animate"></i>&nbsp;<a href="/">ZhenYu</a>
+        </div>
+        
+            <script async  src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+            <div class="website-count info-item">
+                
+                    <span id="busuanzi_container_site_uv">
+                        访问人数&nbsp;<span id="busuanzi_value_site_uv"></span>&ensp;
+                    </span>
+                
+                
+                    <span id="busuanzi_container_site_pv">
+                        总访问量&nbsp;<span id="busuanzi_value_site_pv"></span>
+                    </span>
+                
+            </div>
+        
+        <div class="theme-info info-item">
+            由 <a target="_blank" href="https://hexo.io">Hexo</a> 驱动&nbsp;|&nbsp;主题&nbsp;<a class="theme-version" target="_blank" href="https://github.com/XPoet/hexo-theme-keep">Keep v3.4.3</a>
+        </div>
+        
+            <div class="icp-info info-item"><a target="_blank" rel="nofollow" href="https://beian.miit.gov.cn">京ICP备18000555号-4</a></div>
+        
+    </div>
+</footer>
+
+        </div>
+    </div>
+
+    
+        <div class="post-tools">
+            <div class="post-tools-container">
+    <ul class="tools-list">
+        <!-- TOC aside toggle -->
+        
+            <li class="tools-item page-aside-toggle">
+                <i class="fas fa-outdent"></i>
+            </li>
+        
+
+        <!-- go comment -->
+        
+    </ul>
+</div>
+
+        </div>
+    
+
+    <div class="right-bottom-side-tools">
+        <div class="side-tools-container">
+    <ul class="side-tools-list">
+        <li class="tools-item tool-font-adjust-plus flex-center">
+            <i class="fas fa-search-plus"></i>
+        </li>
+
+        <li class="tools-item tool-font-adjust-minus flex-center">
+            <i class="fas fa-search-minus"></i>
+        </li>
+
+        <li class="tools-item tool-expand-width flex-center">
+            <i class="fas fa-arrows-alt-h"></i>
+        </li>
+
+        <li class="tools-item tool-dark-light-toggle flex-center">
+            <i class="fas fa-moon"></i>
+        </li>
+
+        <!-- rss -->
+        
+
+        
+
+        <li class="tools-item tool-scroll-to-bottom flex-center">
+            <i class="fas fa-arrow-down"></i>
+        </li>
+    </ul>
+
+    <ul class="exposed-tools-list">
+        <li class="tools-item tool-toggle-show flex-center">
+            <i class="fas fa-cog fa-spin"></i>
+        </li>
+        
+            <li class="tools-item tool-scroll-to-top flex-center">
+                <i class="arrow-up fas fa-arrow-up"></i>
+                <span class="percent"></span>
+            </li>
+        
+    </ul>
+</div>
+
+    </div>
+
+    
+        <aside class="page-aside">
+            <div class="post-toc-wrap">
+    <div class="post-toc">
+        <ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%80%E4%B8%AA%E4%BE%8B%E5%AD%90"><span class="nav-number">1.</span> <span class="nav-text">一个例子</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#CQRS%E5%AE%9E%E7%8E%B0%E6%A8%A1%E5%BC%8F%E6%A6%82%E8%A7%88"><span class="nav-number">2.</span> <span class="nav-text">CQRS实现模式概览</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%B8%B8%E8%A7%81%E8%AF%AF%E8%A7%A3"><span class="nav-number">2.1.</span> <span class="nav-text">常见误解</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%9F%A5%E8%AF%A2%E6%A8%A1%E5%9E%8B%E7%9A%84%E6%95%B0%E6%8D%AE%E6%9D%A5%E6%BA%90"><span class="nav-number">2.2.</span> <span class="nav-text">查询模型的数据来源</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%AF%BB%E5%86%99%E6%A8%A1%E5%9E%8B%E7%9A%84%E5%88%86%E7%A6%BB%E5%BD%A2%E5%BC%8F"><span class="nav-number">2.3.</span> <span class="nav-text">读写模型的分离形式</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#CQRS%E7%BC%96%E7%A0%81%E5%AE%9E%E8%B7%B5"><span class="nav-number">3.</span> <span class="nav-text">CQRS编码实践</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-%E5%8D%95%E8%BF%9B%E7%A8%8B%E5%8D%95%E5%AE%9E%E4%BD%93-%E5%85%B1%E4%BA%AB%E5%AD%98%E5%82%A8-%E5%85%B1%E4%BA%AB%E6%A8%A1%E5%9E%8B"><span class="nav-number">3.1.</span> <span class="nav-text">1. 单进程单实体 + 共享存储&#x2F;共享模型</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-%E5%8D%95%E8%BF%9B%E7%A8%8B%E5%8D%95%E5%AE%9E%E4%BD%93-%E5%85%B1%E4%BA%AB%E5%AD%98%E5%82%A8-%E5%88%86%E7%A6%BB%E6%A8%A1%E5%9E%8B"><span class="nav-number">3.2.</span> <span class="nav-text">2. 单进程单实体 + 共享存储&#x2F;分离模型</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-%E5%8D%95%E8%BF%9B%E7%A8%8B%E8%B7%A8%E5%AE%9E%E4%BD%93-%E5%85%B1%E4%BA%AB%E5%AD%98%E5%82%A8-%E5%88%86%E7%A6%BB%E6%A8%A1%E5%9E%8B"><span class="nav-number">3.3.</span> <span class="nav-text">3. 单进程跨实体 + 共享存储&#x2F;分离模型</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-%E5%8D%95%E8%BF%9B%E7%A8%8B%E8%B7%A8%E5%AE%9E%E4%BD%93-%E5%88%86%E7%A6%BB%E5%AD%98%E5%82%A8-%E5%88%86%E7%A6%BB%E6%A8%A1%E5%9E%8B"><span class="nav-number">3.4.</span> <span class="nav-text">4. 单进程跨实体 + 分离存储&#x2F;分离模型</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#5-%E8%B7%A8%E8%BF%9B%E7%A8%8B%E8%B7%A8%E5%AE%9E%E4%BD%93-%E5%88%86%E7%A6%BB%E5%AD%98%E5%82%A8-%E5%88%86%E7%A6%BB%E6%A8%A1%E5%9E%8B"><span class="nav-number">3.5.</span> <span class="nav-text">5. 跨进程跨实体 + 分离存储&#x2F;分离模型</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%B3%E4%BA%8ERepresentation%E5%AF%B9%E8%B1%A1%E7%9A%84%E5%91%BD%E5%90%8D"><span class="nav-number">4.</span> <span class="nav-text">关于Representation对象的命名</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BB%80%E4%B9%88%E6%97%B6%E5%80%99%E8%AF%A5%E9%87%87%E7%94%A8CQRS"><span class="nav-number">5.</span> <span class="nav-text">什么时候该采用CQRS</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">6.</span> <span class="nav-text">总结</span></a></li></ol>
+    </div>
+</div>
+        </aside>
+    
+
+    <div class="image-viewer-container">
+    <img src="">
+</div>
+
+
+    
+
+</main>
+
+
+
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/main.js"></script>
+
+<script src="/js/header-shrink.js"></script>
+
+<script src="/js/back2top.js"></script>
+
+<script src="/js/dark-light-toggle.js"></script>
+
+
+
+
+
+
+
+
+<div class="post-scripts">
+    
+        
+<script src="/js/left-side-toggle.js"></script>
+
+<script src="/js/libs/anime.min.js"></script>
+
+<script src="/js/toc.js"></script>
+
+    
+</div>
+
+
+
+</body>
+</html>

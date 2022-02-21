@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="keywords" content="Hexo Theme Keep">
+    <meta name="description" content="Hexo Theme Keep">
+    <meta name="author" content="ZhenYu">
+    
+    <title>
+        
+            摆脱无效报警？十年运维监控报警优化经验总结 |
+        
+        NoDDD
+    </title>
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <link rel="shortcut icon" href="/images/logo.svg">
+    
+<link rel="stylesheet" href="/css/font-awesome.min.css">
+
+    <script id="hexo-configurations">
+    let KEEP = window.KEEP || {};
+    KEEP.hexo_config = {"hostname":"noddd.cn","root":"/","language":"zh-CN"};
+    KEEP.theme_config = {"toc":{"enable":true,"number":true,"expand_all":true,"init_open":true},"style":{"primary_color":"#0066CC","avatar":"/images/avatar.svg","favicon":"/images/logo.svg","article_img_align":"left","left_side_width":"260px","content_max_width":"920px","hover":{"shadow":false,"scale":false},"first_screen":{"enable":false,"background_img":"/images/bg.svg","description":"Keep writing and Keep loving."},"scroll":{"progress_bar":{"enable":true},"percent":{"enable":true}}},"local_search":{"enable":false,"preload":false},"code_copy":{"enable":false,"style":"default"},"pjax":{"enable":false},"lazyload":{"enable":false},"version":"3.4.3"};
+    KEEP.language_ago = {"second":"%s 秒前","minute":"%s 分钟前","hour":"%s 小时前","day":"%s 天前","week":"%s 周前","month":"%s 月前","year":"%s 年前"};
+  </script>
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<body>
+<div class="progress-bar-container">
+    
+        <span class="scroll-progress-bar"></span>
+    
+
+    
+</div>
+
+
+<main class="page-container">
+
+    
+
+    <div class="page-main-content">
+
+        <div class="page-main-content-top">
+            <header class="header-wrapper">
+
+    <div class="header-content">
+        <div class="left">
+            
+            <a class="logo-title" href="/">
+                NoDDD
+            </a>
+        </div>
+
+        <div class="right">
+            <div class="pc">
+                <ul class="menu-list">
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/"
+                            >
+                                首页
+                            </a>
+                        </li>
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/tags/go"
+                            >
+                                GO
+                            </a>
+                        </li>
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/tags/DDD/"
+                            >
+                                DDD
+                            </a>
+                        </li>
+                    
+                    
+                </ul>
+            </div>
+            <div class="mobile">
+                
+                <div class="icon-item menu-bar">
+                    <div class="menu-bar-middle"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="header-drawer">
+        <ul class="drawer-menu-list">
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/">首页</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/tags/go">GO</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/tags/DDD/">DDD</a>
+                </li>
+            
+        </ul>
+    </div>
+
+    <div class="window-mask"></div>
+
+</header>
+
+
+        </div>
+
+        <div class="page-main-content-middle">
+
+            <div class="main-content">
+
+                
+                    <div class="fade-in-down-animation">
+    <div class="article-content-container">
+
+        <div class="article-title">
+            <span class="title-hover-animation">摆脱无效报警？十年运维监控报警优化经验总结</span>
+        </div>
+
+        
+            <div class="article-header">
+                <div class="avatar">
+                    <img src="/images/avatar.svg">
+                </div>
+                <div class="info">
+                    <div class="author">
+                        <span class="name">ZhenYu</span>
+                        
+                            <span class="author-label">Lv4</span>
+                        
+                    </div>
+                    <div class="meta-info">
+                        <div class="article-meta-info">
+    <span class="article-date article-meta-item">
+        <i class="fas fa-edit"></i>&nbsp;2021-01-16 22:59:54
+    </span>
+    
+    
+        <span class="article-tags article-meta-item">
+            <i class="fas fa-tags"></i>&nbsp;
+            <ul>
+                
+                    <li>
+                        <a href="/tags/%E5%91%8A%E8%AD%A6/">告警</a>&nbsp;
+                    </li>
+                
+                    <li>
+                        | <a href="/tags/%E7%9B%91%E6%8E%A7%E6%8A%A5%E8%AD%A6/">监控报警</a>&nbsp;
+                    </li>
+                
+            </ul>
+        </span>
+    
+
+    
+    
+        <span class="article-wordcount article-meta-item">
+            <i class="fas fa-file-word"></i>&nbsp;<span>4.5k 字</span>
+        </span>
+    
+    
+    
+        <span class="article-pv article-meta-item">
+            <i class="fas fa-eye"></i>&nbsp;<span id="busuanzi_value_page_pv"></span>
+        </span>
+    
+</div>
+
+                    </div>
+                </div>
+            </div>
+        
+
+        <div class="article-content markdown-body">
+            <p>运维工程师面试者第一个问题是：需要值班吗？笔者自己也曾经历过月入十万的时期，在那个时候，数个系统同时发布下一代版本，而老系统还需要过渡很长时间，工作量直接翻倍，大家只能勉强应付一线运维工作，团队成员开始陆续离职，而新人又无法在短时间内上手，整体情况不断恶化，持续半年左右才缓过劲来。</p>
+<p>下面两张截图是我挑选的两个团队一周报警数的对比图，前者的单日报警量最高是 55348 条，后者单日的报警量最高为 34 条，两者相差 1600 倍，而前者才是国内很多互联网运维团队的真实写照。</p>
+<p><img src="http://pic.noddd.cn/posts/20210116230221.jpg" alt="f130ca12f7483098fa82b3f27228ad29"></p>
+<p><img src="http://pic.noddd.cn/posts/20210116230235.jpg" alt="5efb4199773f32a43b76b035de891d94"></p>
+<p>在管理大规模集群的情况下，究竟有多少报警量才是合理的呢？Google SRE 每周只有十条报警，如果超过十条，说明没有把无效报警过滤掉（Google SRE 仅负责 SLA 要求为 99.99%的服务）。笔者所在的团队要求则是，每周至多两晚有报警，单日报警量不能超过 50 条（比 Google SRE 放水好多啊）。</p>
+<p>通过控制单日报警数量，严格约束夜间报警天数，确保最少不低于四人参与值班，笔者所在的团队，近几年来，不仅少有因为值班压力而离职的同学，而且我们每年都能持续招聘到 985 前 20 名学校的多个研究生。那么，怎么做到呢，以下是笔者的一些经验分享。</p>
+<h1 id="运维工程角度看报警优化"><a href="#运维工程角度看报警优化" class="headerlink" title="运维工程角度看报警优化"></a>运维工程角度看报警优化</h1><h2 id="报警值班和报警升级"><a href="#报警值班和报警升级" class="headerlink" title="报警值班和报警升级"></a>报警值班和报警升级</h2><p>基于值班表，每天安排两人进行值班处理报警，将值班压力从全团队压缩在两人范围内，从而让团队能够有足够的时间和人力进行优化工作。同时，为了避免两个值班人员都没有响应报警，可以使用报警升级功能，如果一个报警在 5min 内值班人员均未响应，或者 15min 内未处理完毕，或者有严重故障发生，都可以将报警进行升级，通告团队其他成员协助处理。</p>
+<p>如果公司的监控系统暂不支持值班表功能，则通过人工定期修改报警接收人的方式进行。而对于监控系统不支持报警升级的问题，通过自行开发脚本的方式，也能在一定程度上得到解决。也可以将报警短信发送至商业平台来实现。总之一句话，办法总比问题多。</p>
+<p>对于报警值班人员，需要随时携带笔记本以方便处理服务故障，这个要求，和报警数量多少以及报警的自动化处理程度并无关系，仅和服务重要性有关。对于节假日依然需要值班的同学，公司或者部门也应该尽量以各种方式进行补偿。</p>
+<h2 id="基于重要性不同，分级应对"><a href="#基于重要性不同，分级应对" class="headerlink" title="基于重要性不同，分级应对"></a>基于重要性不同，分级应对</h2><p>一个问题请大家思考一下，如果线上的服务器全部掉电后以短信方式通知值班人员，那么线上一台机器的根分区打满，也通过短信来通知是否有必要。</p>
+<p>上述的问题在日常工作也屡屡发生，对于问题、异常和故障，我们采取了同样的处理方式，因此产生了如此多的无效报警。</p>
+<p>Google SRE 的实践则是将监控系统的输出分为三类，报警，工单和记录。SRE 的要求是所有的故障级别的报警，都必须是接到报警，有明确的非机械重复的事情要做，且必须马上就得做，才能叫做故障级别的报警。其他要么是工单，要么是记录。</p>
+<p>在波音公司装配多个发动机的飞机上，一个发动机熄火的情况只会产生一个”提醒“级别的警示（最高级别是警报，接下来依次是警告，提醒，建议），对于各种警示，会有个检查清单自动弹出在中央屏幕上，以引导飞行员找到解决方案。如果是最高级别的警报，则会以红色信息，语音警报，以及飞机操纵杆的剧烈震动来提示。如果这时你什么都不做，飞机将会坠毁。</p>
+<p><img src="http://pic.noddd.cn/posts/20210116230939.jpg" alt="0da8d49f10b3728de4bf7eb6263f5df4"></p>
+<h2 id="故障自愈"><a href="#故障自愈" class="headerlink" title="故障自愈"></a>故障自愈</h2><p>重启作为单机预案，在很多业务线，可以解决至少 50%的报警。没有响应，重启试试，请求异常，重启试试，资源占用异常，重启试试，各种问题，重启都屡试不爽。</p>
+<p>换言之，针对简单场景具有明确处置方案的报警，自动化是一个比较好的解决方案，能够将人力从大量重复的工作中解放出来。</p>
+<p>自动化处理报警的过程中，需要注意以下问题：</p>
+<ul>
+<li>自动化处理比例不能超过服务的冗余度（默认串行处理最为稳妥）</li>
+<li>不能对同一个问题在短时间内重复多次的自动化处理（不断重启某个机器上的特定进程）</li>
+<li>在特定情况下可以在全局范围内快速终止自动化处理机制</li>
+<li>尽量避免高危操作（如删除操作，重启服务器等操作）</li>
+<li>每次执行操作都需要确保上一个操作的结果和效果收集分析完毕（如果一个服务重启需要10min）</li>
+</ul>
+<p><img src="http://pic.noddd.cn/posts/20210116231139.jpg" alt="8c0ea61eeead87df2d866821fe2bc52c"></p>
+<h2 id="报警仪表盘，持续优化TOP-3的报警"><a href="#报警仪表盘，持续优化TOP-3的报警" class="headerlink" title="报警仪表盘，持续优化TOP-3的报警"></a>报警仪表盘，持续优化TOP-3的报警</h2><p>如下图示，全年 TOP-3 的报警量占比达到 30%，通过对 TOP-3 的报警安排专人进行跟进优化，可以在短时间大幅降低报警量。</p>
+<p>TOP-3 只是报警仪表盘数据分析的典型场景之一，在 TOP-3 之后，还可以对报警特特征进行分析，如哪些模块的报警最多，哪些机器的报警最多，哪个时间段的报警最多，哪种类型的报警最多，进而进行细粒度的优化。</p>
+<p>同时，报警仪表盘还需要提供报警视图的功能，能够基于各种维度展示当前有哪些报警正在发生，从而便于当短时间内收到大量报警，或者是报警处理中的状态总览，以及报警恢复后的确认等。</p>
+<p><img src="http://pic.noddd.cn/posts/20210116231448.jpg" alt="7b4c85e69798ab76bc4c4cb641dd2c6d"></p>
+<h2 id="基于时间段分而治之"><a href="#基于时间段分而治之" class="headerlink" title="基于时间段分而治之"></a>基于时间段分而治之</h2><p>下图是国内非常典型的一类流量图，流量峰值在每天晚上，流量低谷在每天凌晨。从冗余度角度来分析，如果在流量峰值有 20%的冗余度，那么在流量低谷，冗余度至少为 50%。基于冗余度的变换，相应的监控策略的阈值，随机也应该发生一系列的变化。</p>
+<p>举例来说，在高峰期，可能一个服务故障 20%的实例，就必须介入处理的话，那么在低谷期，可能故障 50%的实例，也不需要立即处理，依赖于报警自动化处理功能，逐步修复即可。</p>
+<p>在具体的实践中，一种比较简单的方式就是，在流量低谷期，仅接收故障级别的报警，其余报警转为静默方式或者是自动化处理方式，在流量高峰期来临前几个小时，重新恢复，这样即使流量低谷期出现一些严重隐患，依然有数小时进行修复。这种方式之所以大量流行，是因为该策略能够大幅减少凌晨的报警数量，让值班人员能够正常休息。</p>
+<p><img src="http://pic.noddd.cn/posts/20210116231739.jpg" alt="9055ad1ac0878ea822ba5038cd9256a5"></p>
+<h2 id="报警周期优化，避免瞬报"><a href="#报警周期优化，避免瞬报" class="headerlink" title="报警周期优化，避免瞬报"></a>报警周期优化，避免瞬报</h2><p>在监控趋势图中，会看到偶发的一些毛刺或者抖动，这些毛刺和抖动，就是造成瞬报的主要原因。这些毛刺和抖动，至多定义为异常，而非服务故障，因此应该以非紧急的通知方式进行。</p>
+<p>以 CPU 瞬报为例，如果设置采集周期为 10s，监控条件为 CPU 使用率大于 90%报警，如果设置每次满足条件就报警，那么就会产生大量的报警。如果设置为连续 5 次满足条件报警，或者连续的 10 次中有 5 次满足条件就报警，则会大幅减少无效报警。对于重要服务，一般建议为在 3min 内，至少出现 5 次以上异常，再发送报警较为合理。</p>
+<p><img src="http://pic.noddd.cn/posts/20210116231940.jpg" alt="eea3a50230335ca9a1ab44cebb378938"></p>
+<h2 id="提前预警，防患于未然"><a href="#提前预警，防患于未然" class="headerlink" title="提前预警，防患于未然"></a>提前预警，防患于未然</h2><p>对于很多有趋势规律的场景，可以通过提前预警的方式，降低问题的紧迫程度和严重性。下图是两台机器一周内的磁盘使用率监控图，可以预见，按照目前的增长趋势，必然会在某一个时间点触发磁盘剩余空间 5%的报警，可以在剩余空间小于 10%的时候，通过工单或者其他非紧急方式提醒，在工作时间段内，相对从容的处理完毕即可，毕竟 10%到 5%还是需要一个时间过程的。</p>
+<p><img src="http://pic.noddd.cn/posts/20210116232117.jpg" alt="89788ab2d936d1b81c21370be9c188ea"></p>
+<h2 id="日常巡检"><a href="#日常巡检" class="headerlink" title="日常巡检"></a>日常巡检</h2><p>提前预警面向的是有规律的场景，而日常巡检，还可以发现那些没有规律的隐患。以 CPU 使用率为例进行说明，近期的一个业务上线后，CPU 使用率偶发突增的情况，但是无法触发报警条件（例如 3 分钟内有 5 次使用率超过 70%报警），因此无法通过报警感知。放任不管的话，只能是问题足够严重了，才能通过报警发现。这个时候，如果每天有例行的巡检工作，那么这类问题就能够提前发现，尽快解决，从而避免更加严重的问题发生。</p>
+<h2 id="比例为主，绝对值为辅"><a href="#比例为主，绝对值为辅" class="headerlink" title="比例为主，绝对值为辅"></a>比例为主，绝对值为辅</h2><p>线上机器的规格不同，如果从绝对值角度进行监控，则无法适配所有的机器规格，势必会产生大量无意义的报警。以磁盘剩余空间监控为例，线上规格从 80GB 到 10TB 存在多种规格，从下图表格看，比例比绝对值模式能更好的适配各种规格的场景（EXT4 文件系统的默认预留空间为 5%，也是基于比例设置的并可通过 tune2fs 进行调整）</p>
+<p><img src="http://pic.noddd.cn/posts/20210116232321.jpg" alt="cd207839c96c417b4fbd90f1c6c4f4ef"></p>
+<p>对于一些特殊场景，同样以磁盘剩余空间为例进行说明，例如计算任务要求磁盘至少有 100GB 以上空间，以供存放临时文件，那这个时候，监控策略就可以调整为：磁盘剩余空间小于 5%报警或磁盘剩余空间绝对值小于 100GB 报警</p>
+<h2 id="同环比监控"><a href="#同环比监控" class="headerlink" title="同环比监控"></a>同环比监控</h2><p>同环比监控适用于有明显时间特征规律的数据，和上述提到的基于时间段分而治之的策略，两者的区别为：同环比需要较为明显的基于时间的特征规律，从而提供精准的监控，而后者则以时间段为划分粒度，对特征的精度不做要求。在不具备同环比监控能力的时期，基于时间段分而治之未尝不是一种选择。</p>
+<p><img src="http://pic.noddd.cn/posts/20210116232545.png" alt="77a8c6271bfbbe8f28f089436f900ea9"></p>
+<p>以同环比监控的典型场景流量图为例说明，在具体的一个时间点上，可以看到当前的 QPS，昨日该时间点的 QPS（环比），以及前几周相同时间点的 QPS（同比），因此当前时间的 QPS 是否异常，并不需要关注具体值，只需要和同环比的数据进行比较，其振幅在限定的范围即可，而振幅的大小则决定了监控的敏感程度。这样，通过同环比监控的使用，在不需要人工设置具体阈值以及频繁调整的情况下，就实现了流量小幅涨跌的精准监控，从而大幅减少报警数量。</p>
+<p>同环比监控的落地需要一定的技术门槛和一定的业务体量，目前并非大部分公司监控系统的标配，且据笔者所知，误报率也是很多公司无法解决的硬伤。据我们落地的经验看，误报有如下来源，算法自身的有效性，对于节假日的处理，对于监控系统的数据缺失、数据不完整等的容错等。</p>
+<h2 id="Code-Review"><a href="#Code-Review" class="headerlink" title="Code Review"></a>Code Review</h2><p>前人埋坑，后人挖坑。在解决存量问题的情况下，不对增量问题进行控制，那报警优化，势必会进入螺旋式缓慢上升的过程，这对于报警优化这类项目来说，无疑是致命的。通过对新增监控的 Code Review，可以让团队成员快速达成一致认知，从而避免监控配置出现千人千面的情况出现。</p>
+<h2 id="沉淀标准和最佳实践"><a href="#沉淀标准和最佳实践" class="headerlink" title="沉淀标准和最佳实践"></a>沉淀标准和最佳实践</h2><p>仅仅做 Code Review 还远远不够，一堆人开会，面对一行监控配置，大眼瞪小眼，对不对，为什么不对，怎么做更好？大家没有一个标准，进而会浪费很多时间来进行不断的讨论。这时候，如果有一个标准，告诉大家什么是好，那么就有了评价标准，很多事情就比较容易做了。标准本身也是需要迭代和进步的，因此大家并不需要担心说我的标准不够完美。基于标准，再给出一些最佳的监控时间，那执行起来，就更加容易了。</p>
+<p>以机器监控为例进行说明，机器监控必须覆盖如下的监控指标，且阈值设定也给出了最佳实践，具体如下：</p>
+<ul>
+<li>CPU_IDLE &lt; 10</li>
+<li>MEM_USED_PERCENT &gt; 90</li>
+<li>NET_MAX_NIC_INOUT_PERCENT &gt; 80 （网卡入口/出口流量最大使用率）</li>
+<li>CPU_SERVER_LOADAVG_5 &gt; 15</li>
+<li>DISK_MAX_PARTITION_USED_PERCENT &gt; 95 （磁盘各个分区最大使用率）</li>
+<li>DISK_TOTAL_WRITE_KB（可选项）</li>
+<li>DISK_TOTAL_READ_KB（可选项）</li>
+<li>CPU_WAIT_IO（可选项）</li>
+<li>DISK_TOTAL_IO_UTIL（可选项）</li>
+<li>NET_TCP_CURR_ESTAB（可选项）</li>
+<li>NET_TCP_RETRANS（可选项）</li>
+</ul>
+<h2 id="彻底解决问题不等于自动处理问题"><a href="#彻底解决问题不等于自动处理问题" class="headerlink" title="彻底解决问题不等于自动处理问题"></a>彻底解决问题不等于自动处理问题</h2><p>举两个例子，大家来分析一下这个问题是否得到彻底解决：</p>
+<ul>
+<li>如果一个模块经常崩掉，那么我们可以通过添加一个定时拉起脚本来解决该问题。那这个模块崩掉的问题解决了吗？其实并没有，你增加一个拉起脚本，只是说自己不用上机器去处理了而已，但是模块为什么经常崩掉这个问题，却并没有人去关注，更别提彻底解决了。</li>
+<li>如果一个机器经常出现CPU_IDLE报警，那么我们可以将现在的监控策略进行调整，比如说，以前5min内出现5次就报警，现在可以调整为10min内出现20次再报警，或者直接删除这个报警策略，或者将报警短信调整为报警邮件，或者各种类似的手段。但这个机器为什么出现CPU_IDLE报警，却并没有人去关注，更别提解决了。</li>
+</ul>
+<p>通过上面两个例子，大家就理解，自动化处理问题不等于解决问题，掩耳盗铃也不等于解决问题，什么叫做解决问题，只有是找到问题的根本原因，并消灭之，才能确保彻底解决问题，轻易不会再次发生。还是上面自动拉起的例子，如果仔细分析后，发现是内存泄露导致的进程频繁崩掉，或者是程序 bug 导致的 coredump，那么解决掉这些问题，就能够彻底避免了。</p>
+<h1 id="如何解决团队内部的值班排斥情绪"><a href="#如何解决团队内部的值班排斥情绪" class="headerlink" title="如何解决团队内部的值班排斥情绪"></a>如何解决团队内部的值班排斥情绪</h1><p>每个运维团队早晚都会面对团队高工对值班工作的排斥，这也是人之常情。辛辛苦苦干了几年了，还需要值班，老婆孩子各种抱怨，有时候身体状况也不允许了，都不容易。不同的团队，解决方式不同，但有些解决方案，会让人觉得，你自己都不想值班，还天天给我们打鸡血说值班重要。更严重一些的，会让团队成员感受到不公平，凭什么他可以不值班，下次是不是我们大家也可以找同样的理由呢。</p>
+<p>笔者的团队是这样明确说明的：</p>
+<ul>
+<li>保证值班人员数量不低于四人，如果短时间内低于四人，那么就需要将二线工程师短暂加入一线值班工作中，为期不超过三个月</li>
+<li>对于希望退出值班列表的中级工程师，给三个月不值班时间，如果能将目前的报警短信数量优化20%-50%，则可以退出值班序列，但如果情况反弹，则需要重回值班工作</li>
+<li>团队达到一定级别的工程师，就可以转二线，不参与日常值班工作，仅接收核心报警，且对核心报警的有效性负责，若服务故障核心报警未发出，则每次罚款两百</li>
+<li>团队负责人不参与值班工作，但需要对单日报警数量负责，如果当周的日报警数量大于要求值，则每次罚款两百元。如果团队成员数量低于四人时，则需要加入值班列表</li>
+</ul>
+<h1 id="写在最后"><a href="#写在最后" class="headerlink" title="写在最后"></a>写在最后</h1><p>在团队的报警量有了明显减少后，就需要对报警的准确性和召回率进行要求了，从而才能持续的进行报警优化工作。所谓的准确性，也就是有报警必有损，而召回率呢，则是有损必有报警。</p>
+<p>最后，祝愿大家都不在因为值班工作而苦恼！</p>
+
+        </div>
+
+        
+
+        
+            <div class="article-nav">
+                
+                    <div class="article-prev">
+                        <a class="prev"
+                           rel="prev"
+                           href="/posts/37211610-5c01-11eb-8e64-73a68eaf7790/"
+                        >
+                            <span class="left arrow-icon flex-center">
+                              <i class="fas fa-chevron-left"></i>
+                            </span>
+                            <span class="title flex-center">
+                                <span class="post-nav-title-item">iterm2快捷键速查</span>
+                                <span class="post-nav-item">上一篇</span>
+                            </span>
+                        </a>
+                    </div>
+                
+                
+                    <div class="article-next">
+                        <a class="next"
+                           rel="next"
+                           href="/posts/03fa1c30-500a-11eb-918a-dd497aa0781b/"
+                        >
+                            <span class="title flex-center">
+                                <span class="post-nav-title-item">go语言问题集</span>
+                                <span class="post-nav-item">下一篇</span>
+                            </span>
+                            <span class="right arrow-icon flex-center">
+                              <i class="fas fa-chevron-right"></i>
+                            </span>
+                        </a>
+                    </div>
+                
+            </div>
+        
+
+        
+    </div>
+</div>
+
+
+                
+            </div>
+
+        </div>
+
+        <div class="page-main-content-bottom">
+            <footer class="footer">
+    <div class="info-container">
+        <div class="copyright-info info-item">
+            &copy;
+            
+              <span>2020</span>&nbsp;-&nbsp;
+            
+            2022&nbsp;<i class="fas fa-heart icon-animate"></i>&nbsp;<a href="/">ZhenYu</a>
+        </div>
+        
+            <script async  src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+            <div class="website-count info-item">
+                
+                    <span id="busuanzi_container_site_uv">
+                        访问人数&nbsp;<span id="busuanzi_value_site_uv"></span>&ensp;
+                    </span>
+                
+                
+                    <span id="busuanzi_container_site_pv">
+                        总访问量&nbsp;<span id="busuanzi_value_site_pv"></span>
+                    </span>
+                
+            </div>
+        
+        <div class="theme-info info-item">
+            由 <a target="_blank" href="https://hexo.io">Hexo</a> 驱动&nbsp;|&nbsp;主题&nbsp;<a class="theme-version" target="_blank" href="https://github.com/XPoet/hexo-theme-keep">Keep v3.4.3</a>
+        </div>
+        
+            <div class="icp-info info-item"><a target="_blank" rel="nofollow" href="https://beian.miit.gov.cn">京ICP备18000555号-4</a></div>
+        
+    </div>
+</footer>
+
+        </div>
+    </div>
+
+    
+        <div class="post-tools">
+            <div class="post-tools-container">
+    <ul class="tools-list">
+        <!-- TOC aside toggle -->
+        
+            <li class="tools-item page-aside-toggle">
+                <i class="fas fa-outdent"></i>
+            </li>
+        
+
+        <!-- go comment -->
+        
+    </ul>
+</div>
+
+        </div>
+    
+
+    <div class="right-bottom-side-tools">
+        <div class="side-tools-container">
+    <ul class="side-tools-list">
+        <li class="tools-item tool-font-adjust-plus flex-center">
+            <i class="fas fa-search-plus"></i>
+        </li>
+
+        <li class="tools-item tool-font-adjust-minus flex-center">
+            <i class="fas fa-search-minus"></i>
+        </li>
+
+        <li class="tools-item tool-expand-width flex-center">
+            <i class="fas fa-arrows-alt-h"></i>
+        </li>
+
+        <li class="tools-item tool-dark-light-toggle flex-center">
+            <i class="fas fa-moon"></i>
+        </li>
+
+        <!-- rss -->
+        
+
+        
+
+        <li class="tools-item tool-scroll-to-bottom flex-center">
+            <i class="fas fa-arrow-down"></i>
+        </li>
+    </ul>
+
+    <ul class="exposed-tools-list">
+        <li class="tools-item tool-toggle-show flex-center">
+            <i class="fas fa-cog fa-spin"></i>
+        </li>
+        
+            <li class="tools-item tool-scroll-to-top flex-center">
+                <i class="arrow-up fas fa-arrow-up"></i>
+                <span class="percent"></span>
+            </li>
+        
+    </ul>
+</div>
+
+    </div>
+
+    
+        <aside class="page-aside">
+            <div class="post-toc-wrap">
+    <div class="post-toc">
+        <ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%BF%90%E7%BB%B4%E5%B7%A5%E7%A8%8B%E8%A7%92%E5%BA%A6%E7%9C%8B%E6%8A%A5%E8%AD%A6%E4%BC%98%E5%8C%96"><span class="nav-number">1.</span> <span class="nav-text">运维工程角度看报警优化</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8A%A5%E8%AD%A6%E5%80%BC%E7%8F%AD%E5%92%8C%E6%8A%A5%E8%AD%A6%E5%8D%87%E7%BA%A7"><span class="nav-number">1.1.</span> <span class="nav-text">报警值班和报警升级</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9F%BA%E4%BA%8E%E9%87%8D%E8%A6%81%E6%80%A7%E4%B8%8D%E5%90%8C%EF%BC%8C%E5%88%86%E7%BA%A7%E5%BA%94%E5%AF%B9"><span class="nav-number">1.2.</span> <span class="nav-text">基于重要性不同，分级应对</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%95%85%E9%9A%9C%E8%87%AA%E6%84%88"><span class="nav-number">1.3.</span> <span class="nav-text">故障自愈</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8A%A5%E8%AD%A6%E4%BB%AA%E8%A1%A8%E7%9B%98%EF%BC%8C%E6%8C%81%E7%BB%AD%E4%BC%98%E5%8C%96TOP-3%E7%9A%84%E6%8A%A5%E8%AD%A6"><span class="nav-number">1.4.</span> <span class="nav-text">报警仪表盘，持续优化TOP-3的报警</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9F%BA%E4%BA%8E%E6%97%B6%E9%97%B4%E6%AE%B5%E5%88%86%E8%80%8C%E6%B2%BB%E4%B9%8B"><span class="nav-number">1.5.</span> <span class="nav-text">基于时间段分而治之</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8A%A5%E8%AD%A6%E5%91%A8%E6%9C%9F%E4%BC%98%E5%8C%96%EF%BC%8C%E9%81%BF%E5%85%8D%E7%9E%AC%E6%8A%A5"><span class="nav-number">1.6.</span> <span class="nav-text">报警周期优化，避免瞬报</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8F%90%E5%89%8D%E9%A2%84%E8%AD%A6%EF%BC%8C%E9%98%B2%E6%82%A3%E4%BA%8E%E6%9C%AA%E7%84%B6"><span class="nav-number">1.7.</span> <span class="nav-text">提前预警，防患于未然</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%97%A5%E5%B8%B8%E5%B7%A1%E6%A3%80"><span class="nav-number">1.8.</span> <span class="nav-text">日常巡检</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%AF%94%E4%BE%8B%E4%B8%BA%E4%B8%BB%EF%BC%8C%E7%BB%9D%E5%AF%B9%E5%80%BC%E4%B8%BA%E8%BE%85"><span class="nav-number">1.9.</span> <span class="nav-text">比例为主，绝对值为辅</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%90%8C%E7%8E%AF%E6%AF%94%E7%9B%91%E6%8E%A7"><span class="nav-number">1.10.</span> <span class="nav-text">同环比监控</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Code-Review"><span class="nav-number">1.11.</span> <span class="nav-text">Code Review</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B2%89%E6%B7%80%E6%A0%87%E5%87%86%E5%92%8C%E6%9C%80%E4%BD%B3%E5%AE%9E%E8%B7%B5"><span class="nav-number">1.12.</span> <span class="nav-text">沉淀标准和最佳实践</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BD%BB%E5%BA%95%E8%A7%A3%E5%86%B3%E9%97%AE%E9%A2%98%E4%B8%8D%E7%AD%89%E4%BA%8E%E8%87%AA%E5%8A%A8%E5%A4%84%E7%90%86%E9%97%AE%E9%A2%98"><span class="nav-number">1.13.</span> <span class="nav-text">彻底解决问题不等于自动处理问题</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%A6%82%E4%BD%95%E8%A7%A3%E5%86%B3%E5%9B%A2%E9%98%9F%E5%86%85%E9%83%A8%E7%9A%84%E5%80%BC%E7%8F%AD%E6%8E%92%E6%96%A5%E6%83%85%E7%BB%AA"><span class="nav-number">2.</span> <span class="nav-text">如何解决团队内部的值班排斥情绪</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%86%99%E5%9C%A8%E6%9C%80%E5%90%8E"><span class="nav-number">3.</span> <span class="nav-text">写在最后</span></a></li></ol>
+    </div>
+</div>
+        </aside>
+    
+
+    <div class="image-viewer-container">
+    <img src="">
+</div>
+
+
+    
+
+</main>
+
+
+
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/main.js"></script>
+
+<script src="/js/header-shrink.js"></script>
+
+<script src="/js/back2top.js"></script>
+
+<script src="/js/dark-light-toggle.js"></script>
+
+
+
+
+
+
+
+
+<div class="post-scripts">
+    
+        
+<script src="/js/left-side-toggle.js"></script>
+
+<script src="/js/libs/anime.min.js"></script>
+
+<script src="/js/toc.js"></script>
+
+    
+</div>
+
+
+
+</body>
+</html>

@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="keywords" content="Hexo Theme Keep">
+    <meta name="description" content="Hexo Theme Keep">
+    <meta name="author" content="ZhenYu">
+    
+    <title>
+        
+            谈谈缓存 |
+        
+        NoDDD
+    </title>
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <link rel="shortcut icon" href="/images/logo.svg">
+    
+<link rel="stylesheet" href="/css/font-awesome.min.css">
+
+    <script id="hexo-configurations">
+    let KEEP = window.KEEP || {};
+    KEEP.hexo_config = {"hostname":"noddd.cn","root":"/","language":"zh-CN"};
+    KEEP.theme_config = {"toc":{"enable":true,"number":true,"expand_all":true,"init_open":true},"style":{"primary_color":"#0066CC","avatar":"/images/avatar.svg","favicon":"/images/logo.svg","article_img_align":"left","left_side_width":"260px","content_max_width":"920px","hover":{"shadow":false,"scale":false},"first_screen":{"enable":false,"background_img":"/images/bg.svg","description":"Keep writing and Keep loving."},"scroll":{"progress_bar":{"enable":true},"percent":{"enable":true}}},"local_search":{"enable":false,"preload":false},"code_copy":{"enable":false,"style":"default"},"pjax":{"enable":false},"lazyload":{"enable":false},"version":"3.4.3"};
+    KEEP.language_ago = {"second":"%s 秒前","minute":"%s 分钟前","hour":"%s 小时前","day":"%s 天前","week":"%s 周前","month":"%s 月前","year":"%s 年前"};
+  </script>
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<body>
+<div class="progress-bar-container">
+    
+        <span class="scroll-progress-bar"></span>
+    
+
+    
+</div>
+
+
+<main class="page-container">
+
+    
+
+    <div class="page-main-content">
+
+        <div class="page-main-content-top">
+            <header class="header-wrapper">
+
+    <div class="header-content">
+        <div class="left">
+            
+            <a class="logo-title" href="/">
+                NoDDD
+            </a>
+        </div>
+
+        <div class="right">
+            <div class="pc">
+                <ul class="menu-list">
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/"
+                            >
+                                首页
+                            </a>
+                        </li>
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/tags/go"
+                            >
+                                GO
+                            </a>
+                        </li>
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/tags/DDD/"
+                            >
+                                DDD
+                            </a>
+                        </li>
+                    
+                    
+                </ul>
+            </div>
+            <div class="mobile">
+                
+                <div class="icon-item menu-bar">
+                    <div class="menu-bar-middle"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="header-drawer">
+        <ul class="drawer-menu-list">
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/">首页</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/tags/go">GO</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/tags/DDD/">DDD</a>
+                </li>
+            
+        </ul>
+    </div>
+
+    <div class="window-mask"></div>
+
+</header>
+
+
+        </div>
+
+        <div class="page-main-content-middle">
+
+            <div class="main-content">
+
+                
+                    <div class="fade-in-down-animation">
+    <div class="article-content-container">
+
+        <div class="article-title">
+            <span class="title-hover-animation">谈谈缓存</span>
+        </div>
+
+        
+            <div class="article-header">
+                <div class="avatar">
+                    <img src="/images/avatar.svg">
+                </div>
+                <div class="info">
+                    <div class="author">
+                        <span class="name">ZhenYu</span>
+                        
+                            <span class="author-label">Lv4</span>
+                        
+                    </div>
+                    <div class="meta-info">
+                        <div class="article-meta-info">
+    <span class="article-date article-meta-item">
+        <i class="fas fa-edit"></i>&nbsp;2021-05-10 19:45:08
+    </span>
+    
+    
+        <span class="article-tags article-meta-item">
+            <i class="fas fa-tags"></i>&nbsp;
+            <ul>
+                
+                    <li>
+                        <a href="/tags/%E7%BC%93%E5%AD%98/">缓存</a>&nbsp;
+                    </li>
+                
+            </ul>
+        </span>
+    
+
+    
+    
+        <span class="article-wordcount article-meta-item">
+            <i class="fas fa-file-word"></i>&nbsp;<span>9.1k 字</span>
+        </span>
+    
+    
+    
+        <span class="article-pv article-meta-item">
+            <i class="fas fa-eye"></i>&nbsp;<span id="busuanzi_value_page_pv"></span>
+        </span>
+    
+</div>
+
+                    </div>
+                </div>
+            </div>
+        
+
+        <div class="article-content markdown-body">
+            <hr>
+<blockquote>
+<p>最近看了一些关于缓存的东西，七零八落的，所以在这里做个总结。一开始想着用一篇文章把缓存相关的内容都梳理下，写着写着发现要写的东西太多了，于是就把整篇文章拆成了上下两篇。在上篇中主要介绍缓存的一些概念和用法。下篇针对缓存使用中可能会遇到的一些问题给出解决方案。</p>
+</blockquote>
+<p>缓存相信大家都不陌生了，比如浏览器、CDN、返向代理，等等。它们通过将一些资源（通常是静态资源）部署在离用户较近的地方，当用户再次请求这些内容时，就可以就近取材，从而达到提高用户访问速度的目的。而我们今天要说的是在服务器端开发中使用到的缓存技术。</p>
+<p>在所有的网站架构演化的历程中，当网站遇到性能瓶颈时，无一例外的首要解决方案就是使用缓存。缓存之所以能够大大提高网站性能，原因在于两方面：</p>
+<ol>
+<li><p>通过将数据存储在较高访问速度的存储介质上，可以减少数据访问的时间。</p>
+</li>
+<li><p>一些需要通过计算处理才能得到的数据，对这样的数据进行缓存，能够减少计算时间。</p>
+</li>
+</ol>
+<p>但是，缓存在帮助我们提高系统性能的同时，也给我们的业务带来了一定的复杂性，要用好缓存并不是一件容易的事情。在正式使用之前，我们首先要对缓存中涉及的几个概念有一定了解。</p>
+<h2 id="缓存的几个概念"><a href="#缓存的几个概念" class="headerlink" title="缓存的几个概念"></a>缓存的几个概念</h2><h3 id="命中率"><a href="#命中率" class="headerlink" title="命中率"></a>命中率</h3><p>如果采用公式来解释命中率，就是：命中率 = 命中数 /（命中数 + 没有命中数）。命中率越高，也就表明缓存的使用率越高。作为缓存的一个非常重要的参考指标，在生产环境下，通常就是通过这个指标来判断缓存是否工作良好。</p>
+<h3 id="缓存容量"><a href="#缓存容量" class="headerlink" title="缓存容量"></a>缓存容量</h3><p>缓存容量也就是缓存中最多能够存放多少的元素。当实际存放的大小超过这个值时，就需要将缓存中已有的一些数据清除掉，然后将新的数据加进来。缓存的容量一般有两种度量方式：</p>
+<ol>
+<li>基于空间，也就是设置一个固定的存储空间，比如100M、200M这样。</li>
+<li>基于容量，设置最多能够存储的条目是多少，比如最多缓存100条或1000条数据。</li>
+</ol>
+<p>无论采用哪种方式，当要缓存的数据量远远大于缓存容量时，就会频繁的触发淘汰操作，这在一定程度上也影响到了命中率的大小。</p>
+<h3 id="淘汰算法"><a href="#淘汰算法" class="headerlink" title="淘汰算法"></a>淘汰算法</h3><p>上面我们说了当缓存容量不够时，就要踢出一部分旧的数据，那具体哪些旧数据应该被踢出呢？这就是淘汰算法要做的事情了。不同的淘汰策略，对命中率也有一定的影响。常见的淘汰算法有下面三种：</p>
+<ol>
+<li><p>FIFO（First In First Out）</p>
+<p>先进先出算法，也就是最先放到缓存的数据最先被移除。</p>
+</li>
+<li><p>LRU（Least Recently Used）</p>
+<p>最近最少使用算法，最后一次使用时间距离现在最久的那个数据最先被移除。</p>
+</li>
+<li><p>LFU（Least Frequently Used）</p>
+<p>最不常用算法，就是以某段时间内的使用次数作为依据，将使用频率最低的那个数据移除。</p>
+</li>
+</ol>
+<p>在实际开发中，LRU算法应该是最常使用的。</p>
+<h3 id="过期策略"><a href="#过期策略" class="headerlink" title="过期策略"></a>过期策略</h3><p>淘汰算法说的是当存储空间不够时，我们应该对数据做什么样的操作。因为缓存的容量是有限的，所以，即使是在缓存容量没满时，我们也要确定是希望放入缓存的数据永久有效还是在一段时间内有效。如果是在一段时间内有效，那么又会分为两种策略：</p>
+<ol>
+<li><p>TTL（Time To Live）</p>
+<p>存活期策略，缓存数据从创建开始，允许其在缓存中存活的时间。比如8点的时候创建了缓存，设定的缓存时间是1小时，那么到9点的时候该数据就会过期。</p>
+</li>
+<li><p>TTI（Time To Idle）</p>
+<p>空闲期策略，即缓存数据多久没被访问后就被移除缓存的时间。还是以上面为例，8点的时候创建了缓存，如果一直没有访问，那么在9点的时候该数据就会过期。但假如在8点30分的时候有过一次访问，那么该数据就会延后到9点30分过期。如果一直有访问，那么该数据就一直不会过期。</p>
+</li>
+</ol>
+<h2 id="缓存的类型"><a href="#缓存的类型" class="headerlink" title="缓存的类型"></a>缓存的类型</h2><p>了解了上面介绍的几个概念后，就要做选型了，目前我们可以选择的缓存类型有很多，每个都有优点也有缺点，具体使用哪个，也要结合具体的业务综合分析。</p>
+<p>大体上来看，可以将缓存分为本地缓存和分布式缓存，其中的每一类又可以做进一步的细分。我们先来看看本地缓存。</p>
+<h3 id="本地缓存"><a href="#本地缓存" class="headerlink" title="本地缓存"></a>本地缓存</h3><p>所谓本地缓存就是缓存和应用是在同一个进程里的，这类缓存因为没有网络开销，请求速度非常快。</p>
+<p>以Java为例，我们可以定义Map&lt;String, Object&gt;类型的实例变量或是静态变量，这就是最简单的一种本地缓存实现。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">SomeCacheUtils</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> Map&lt;String, Object&gt; someMap = <span class="keyword">new</span> HashMap&lt;&gt;();</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 省略一些方法 ...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这种方式因为跟应用共用Java的堆内存空间，所以能够缓存的数据量不会很大，并且还要考虑GC的问题，当堆内存不足时，要能够及时的回收这部分内存。在实际开发时，我们只要使用造好的轮子 - <code>Gauva Cache</code>就可以了。示例代码如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">SomeCacheUtils</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> Cache&lt;String, Object&gt; someCache = CacheBuilder.newBuilder()</span><br><span class="line">        .concurrencyLevel(<span class="number">5</span>)</span><br><span class="line">        .expireAfterWrite(<span class="number">60</span>, TimeUnit.SECONDS)</span><br><span class="line">        .maximumSize(<span class="number">10000</span>)</span><br><span class="line">        .build();</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// 省略一些方法 ...</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>本地缓存使用起来方便，但容量有限，因此我们更倾向于缓存那些量小且变化不频繁的数据。比如一个购物网站的类别信息，就可以在系统启动的时候一次性加载到内存中。当数据发生变化时，我们一般有三种方式来进行缓存的更新：</p>
+<ol>
+<li><p>重启服务，能解决问题，但是在生产环境非常不推荐这么做。</p>
+</li>
+<li><p>设置一个定时任务，按照一定的时间间隔去同步数据，但是需要忍受一定程度的不一致。</p>
+</li>
+<li><p>通过ZooKeeper主动推送变动，这也是最优的一种方案。</p>
+</li>
+</ol>
+<p>在实际操作时，还要注意多线程同步的问题，为了尽量降低对线上服务的影响，一般会使用读写锁，在更新的数据准备完毕，即将进行缓存更新时，这个时候再加上一把写锁，而不是先加锁再去准备数据。</p>
+<h3 id="分布式缓存"><a href="#分布式缓存" class="headerlink" title="分布式缓存"></a>分布式缓存</h3><p>本地缓存除了存在单机容量的问题，在集群多节点的时候还存在数据一致性的问题，也就是在某一个时间点，节点A和节点B上缓存的数据是不同的。此外，本地缓存的另一个问题是，当缓存没有命中时，就要回源到数据库，由于集群中每个实例缓存的数据是一样的，也就意味着每个实例都要回源，这无形中增大了数据库的访问压力。</p>
+<p>分布式缓存就很好的解决了这几个问题。</p>
+<p>常用的分布式缓存包括Memcache和Redis，在实际应用中，根据具体的业务可以选择其中之一或混合使用。</p>
+<h4 id="Memcache"><a href="#Memcache" class="headerlink" title="Memcache"></a>Memcache</h4><p>memcache只支持基础的key-value键值对类型的数据存储，在启动的时候，我们可以通过 <code>-m</code> 参数来指定可用内存大小。但是在启动后，并不是立马分配出去指定大小的内存，而是在有需要的时候再申请。每次申请的大小是 <code>1M</code>，我们称为一个 <code>slab</code>，在这一个slab中，又被平均的划分为了若干个 <code>chunk</code>。每个chunk中都保存了一个item结构体、一对key和value。</p>
+<p><img src="http://pic.noddd.cn/posts/20210511000155.png" alt="20190204094625"></p>
+<p>虽然在同一个slab中chunk的大小是相等的，但是在不同的slab中chunk的大小并不一定相等。按照chunk大小的不同，可以把slab分为很多种类（class），默认情况下memcached把slab分为40类（class1～class40），在class 1中，chunk的大小为80字节，由于一个slab的大小是固定的1048576字节（1M），因此在class1中最多可以有13107个chunk（也就是这个slab能存最多13107个小于80字节的key-value数据）。</p>
+<p>除此以外，memcache的内存管理还采取了预分配方式，也就是向memcache中添加一个item时候，它首先会根据item的大小，来选择最合适的slab class。假如item的大小为190字节，默认情况下class 4的chunk大小为160字节显然不合适，class 5的chunk大小为200字节，大于190字节，因此该item将放在class 5中（显然这里会有10字节的浪费是不可避免的）。计算好所要放入的chunk之后，memcache会再去检查该类大小的chunk还有没有空闲的，如果没有，将会申请1M（1个slab）的空间并划分为该种类chunk。</p>
+<p>我们在使用memcache时，通常需要注意以下几点：</p>
+<ol>
+<li><p>对于key-value信息，最好不要超过1m的大小。</p>
+</li>
+<li><p>信息长度最好相对是比较均衡稳定的，这样能够保障最大限度的使用内存。</p>
+</li>
+<li><p>memcached采用的LRU清理策略，合理设置过期时间，提高命中率。</p>
+</li>
+</ol>
+<h4 id="Redis"><a href="#Redis" class="headerlink" title="Redis"></a>Redis</h4><p>Redis是一个内存型数据库，最大的特点是除了能够存储键值对外，还能够存储5种（string、hash、list、set、sorted set）不同类型的值，并且具有持久化到磁盘的能力。</p>
+<p>另外，Redis使用了单线程的I/O复用模型，并且自己封装了一个简单的AeEvent事件处理框架。对于单纯只有I/O操作来说，单线程可以将速度优势发挥到最大，但是对于一些计算场景，单线程模型实际会严重影响整体吞吐量，需要我们特别注意。</p>
+<p>由于Redis丰富的数据结构支持，所以它与memcache相比，具有更广的应用场景，比如下面几个场景：</p>
+<ol>
+<li><p>排行榜及相关问题</p>
+<p>排行榜（leader board）按照得分进行排序。ZADD命令可以直接实现这个功能，而ZREVRANGE命令可以用来按照得分来获取前100名的用户，ZRANK可以用来获取用户排名。</p>
+</li>
+<li><p>计数问题</p>
+<p>进行各种数据统计的用途是非常广泛的，比如想知道什么时候封锁一个IP地址。INCRBY命令通过原子递增保持计数；GETSET用来重置计数器；过期属性用来确认一个关键字什么时候应该删除。</p>
+</li>
+<li><p>Pub/Sub</p>
+<p>Redis的pub/sub功能提供了SUBSCRIBE、UNSUBSCRIBE和PUBLISH命令，它们被设计的非常轻量，发布的消息发送后就消失了，redis不会对其持久化，消息订阅者也将只能得到订阅之后的消息,通道中此前的消息将无从获得。</p>
+</li>
+</ol>
+<h2 id="缓存的使用模式"><a href="#缓存的使用模式" class="headerlink" title="缓存的使用模式"></a>缓存的使用模式</h2><p>在选定了缓存类型，确定了缓存容量、淘汰算法以及过期策略后，就要正式使用了。具体怎么用呢，这里面就又涉及到几个问题，比如我们是先操作数据库还是先操作缓存呢？是应该更新缓存还是淘汰缓存呢？</p>
+<p>从大的方向上说，根据关注点的不同，可以将使用模式分为<code>Cache-Aside</code>和<code>Cache-As-SoR</code>，这里的SoR（system-of-record）我们可以简单理解成数据库。Cache-Aside就是业务围绕缓存写，由业务代码直接维护缓存。而Cache-As-SoR则恰恰相反，业务所有的操作都是对Cache进行的，然后Cache再委托SoR进行真实的读写。其中，<code>Cache-As-SoR</code> 又可以细分为 <code>Read-through</code> 、<code>Write-through</code>、<code>Write-behind</code> 三种。</p>
+<h3 id="Cache-Aside"><a href="#Cache-Aside" class="headerlink" title="Cache-Aside"></a>Cache-Aside</h3><p>我们分别在读场景和写场景下讨论该种模式的处理流程。</p>
+<p><strong>读场景</strong></p>
+<p>首先，从缓存中读取数据，如果没有命中，则回源到DB。之后，再将数据放入缓存，供下次读取使用。用伪代码表示如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">val = cache.getIfPresent(key)</span><br><span class="line">if val is null</span><br><span class="line">	val = loadFromDb(key)</span><br><span class="line">	cache.put(key, val)</span><br><span class="line">return val</span><br></pre></td></tr></table></figure>
+
+<p>整体上来说，读场景下的操作还是比较简单的，而写场景下的操作就会相对复杂一些了。</p>
+<p><strong>写场景</strong></p>
+<p>在这里，我们先抛出两个问题：</p>
+<ol>
+<li>应该更新缓存还是淘汰缓存？</li>
+<li>先操作数据库还是先操作缓存？</li>
+</ol>
+<p>针对第一个问题，两者的区别是，淘汰缓存会增加一次缓存不命中，但假如更新缓存需要做复杂的计算，那么我们更倾向于使用操作简单的后者，因为增加一次缓存不命中的副作用很小。因此，我们可以 <code>将过期缓存作为一种通用的处理方式</code>。</p>
+<p>对于第二个问题，假设先写数据库，再淘汰缓存：第一步写数据库操作成功，第二步淘汰缓存失败，则会出现数据库中是新数据，Cache中是旧数据，从而导致数据不一致。</p>
+<p>假设先淘汰缓存，再写数据库：第一步淘汰缓存成功，第二步写数据库失败，则会引发一次Cache miss。</p>
+<p>貌似第二种方式要好一些。</p>
+<p>但是，我们知道，在分布式环境下，数据的读写都是并发的，在数据库层面并发的读写并不能保证完成顺序。因此，可能的一种情况是，淘汰缓存之后，还没有写库完成之前，另外一个线程读出了脏数据，脏数据又入了缓存，此时出现了缓存与数据库中的数据不一致的问题。</p>
+<p>解决这个问题的一种方案是串行化，根据id映射到具体的某个服务，再将这个服务内的数据库连接池修改为按id取连接。是不是听起来就很复杂，而且如果这个服务宕掉了，映射关系是不是也要一起改呢？我个人并不是很认可使用这种方案，换个角度来想，从缓存维度的角度看，可以将缓存分为两种：</p>
+<ol>
+<li><p>用户维度的缓存，比如用户信息，大多数场景都是只有他自己在操作，所以基本上不需要考虑并发的情况。</p>
+</li>
+<li><p>公用的缓存数据，比如一个购物网站的商品信息，这个时候需要考虑并发的影响。</p>
+</li>
+</ol>
+<p>针对第一种，因为不需要考虑并发，所以先淘汰缓存再写数据库是最优解。而对于第二种，先写数据库再淘汰缓存的复杂度更低，至于极小概率的缓存不一致问题也要分两方面看。首先，如果我们能够容忍一定程度的不一致，那么这个问题就不需要做太多的处理，只要设置一个合理的过期时间就可以了。其次，我们也可以考虑使用canal订阅binlog来进行增量更新缓存。</p>
+<p>总结一下，在更新缓存时，我们可以采取下面的策略：</p>
+<ul>
+<li>可以直接淘汰缓存，而不是更新缓存，这样实现最简单，副作用也小。</li>
+<li>对于用户唯独的数据，如果不存在并发的问题，可以先淘汰缓存再写数据库。</li>
+<li>对于公共的数据，要先写数据库再淘汰缓存，根据对数据不一致性的容忍度，可以选择性使用canal订阅binlog做增量更新。</li>
+<li>如果写数据库是存在事务的，要把写缓存放到事务之外，避免因为网络抖动等原因使得写缓存的响应时间很慢，进而导致数据库事务的阻塞。</li>
+</ul>
+<h3 id="Cache-As-SoR"><a href="#Cache-As-SoR" class="headerlink" title="Cache-As-SoR"></a>Cache-As-SoR</h3><p>这种模式下，我们在业务逻辑中看到的只有对Cache的操作，而直接操作DB的代码是看不到的。</p>
+<p><strong>Read-through</strong></p>
+<p>业务代码首先读取Cache，如果Cache不命中则由Cache回源到DB。使用该模式需要配置一个CacheLoader，告诉Cache如何回源到DB加载数据。我们以Guava为例：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">LoadingCache&lt;Integer, List&lt;Category&gt;&gt; cache = CacheBuilder.newBuilder()</span><br><span class="line">    .softValues()</span><br><span class="line">    .maximumSize(<span class="number">1000</span>)</span><br><span class="line">    .expireAfterWrite(<span class="number">2</span>, TimeUnit.MINUTES)</span><br><span class="line">    .build(<span class="keyword">new</span> CacheLoader&lt;Integer, List&lt;Category&gt;&gt;() &#123;</span><br><span class="line">        <span class="meta">@Override</span></span><br><span class="line">        <span class="function"><span class="keyword">public</span> List&lt;Category&gt; <span class="title">load</span><span class="params">(<span class="keyword">final</span> Integer parentId)</span> </span>&#123;</span><br><span class="line">            <span class="keyword">return</span> categoryService.get(parentId);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;);</span><br></pre></td></tr></table></figure>
+
+<p>这样做的好处是：</p>
+<ol>
+<li><p>让业务代码变得更加简洁，缓存查询代码和DB回源代码不用交织在一起，可以很好的消除重复代码。</p>
+</li>
+<li><p>在高访问量下可以，可以在内部指定某一个请求去回源，避免了Dog-pile Effect的问题。</p>
+</li>
+</ol>
+<blockquote>
+<p>在缓存系统中，缓存总有失效的时候，比如我们经常使用的 Memcache 和 Redis ，都会设置超时时间；而一旦缓存到了超时时间失效之后，如果此时再有大量的并发向数据库发起请求，就会造成服务器卡顿甚至是系统宕机。这就是 Dog Pile Effect 。</p>
+</blockquote>
+<p><strong>Write-through</strong></p>
+<p>业务代码首先调用Cache写数据，然后由Cache负责写缓存写DB。使用该种模式时，一般需要配置一个CacheWriter来回写DB。Guava Cache没有没有提供对此种模式的支持，我们这里就不再演示了。</p>
+<p><strong>Write-Behind</strong></p>
+<p>又叫回写模式，write-through 是同步写缓存和DB的，而 write-behind 是异步写。由于是异步写，所以我们就可以玩出更多的花样，比如实现批量写、合并写、延时和限流等操作。</p>
+<p>一般来说，在大多数情况下我们使用的都是Cache-Aside模式，原因就在于它足够简单，也更易于理解。Cache-As-SoR 模式虽然在一定程度上能简化业务代码，但实现起来略显复杂，如果没有明显的优势，我个人更倾向于简单、易懂。</p>
+<p>其实还有一个上面没有谈到的问题是缓存的过期与不过期，只不过我们大部分使用缓存的时候都会加上一个过期时间，所以很容易忽略这个问题。我们上面在介绍本地缓存时，举了一个商品类别的例子，这也是缓存不过期的一种应用。对于这种一致性不是特别高，数据量也不是很大的场景，就可以使用不过期缓存，然后通过定期任务全量同步缓存。此外，一些数据访问频率很高的场景，或者是缓存空间足够，都可以考虑不过期缓存。当缓存满了，可以考虑使用LRU机制来驱逐老的缓存数据。而大多时候我们使用过期缓存机制也并没有什么问题。</p>
+<h2 id="具体场景下的解决方案"><a href="#具体场景下的解决方案" class="headerlink" title="具体场景下的解决方案"></a>具体场景下的解决方案</h2><h3 id="应对热点缓存"><a href="#应对热点缓存" class="headerlink" title="应对热点缓存"></a>应对热点缓存</h3><p>所谓热点缓存就是访问非常频繁的那些缓存，比如一个电商系统的秒杀页面，或者是微博的热门话题页等，对于这类页面所请求的数据，如果每次都去远程缓存系统中获取，可能会因为访问量太大导致远程缓存系统出现请求过多、负载过高或者带宽过高等问题，最终导致缓存响应慢，使客户端请求超时。</p>
+<p>处理这类问题，一种方案是增加本地缓存，从而避免访问远程缓存。另一种方案就是采取缓存复制，将请求分散到多个缓存服务器上，减轻缓存热点导致的单台服务器压力。</p>
+<p>我们都知道Memcached采用了一致性hash算法来路由请求，一个key映射到一个节点上，如果想将同一份数据同时缓存到不同的节点上，要么改变路由算法，要么缓存多个key。</p>
+<p>如果是改变路由算法，可以将一致性hash降级为轮询，这样做的一个缺点是，在刚切换的时候会降低整个系统的缓存命中率，给数据库带来比较大的压力。所以，对于能预见到的热点数据，可以在一开始的时候就采用轮询的算法。</p>
+<p>缓存多key就是将原来的key-value发布为key1-value、key2-value … key100-value … ，我们可以把这里的key1、key2 … key100 … 看做是原始key的别名。对于大量读操作而言，通过client端路由策略，随意返回一个key{N}即可。</p>
+<p>写操作和删除操作则相对麻烦一些，当做删除动作时，会删除所有的别名key，而写操作，也要写所有别名key。无论哪种，都是一个批量操作，怎么保证都成功呢？</p>
+<p>首先，我们要确定是否能够容忍部分失败导致的数据不一致问题，如果可以容忍，那么我们的系统就可以简单一些。在不能够容忍不一致的情况下，我们可以通过定时任务来执行操作。当有写操作或删除操作时，这个动作通过消息队列发送给定时任务来更新缓存，只有所有的操作都成功了才代表最终的成功，否则会重试。</p>
+<p>此外，这里还有一个细节需要注意，就是key1、key2 … key100 … 不能够设置成相同的过期时间，否则会出现所有缓存副本同时失效的情况，从而引发缓存雪崩效应。正确的做法是设定一个过期时间范围，不同缓存副本的过期时间是指定范围内的随机值。</p>
+<h3 id="应对大型缓存"><a href="#应对大型缓存" class="headerlink" title="应对大型缓存"></a>应对大型缓存</h3><p>大型缓存就是缓存的值很大，由于Redis是单线程实现，所以这种情况可能导致redis的吞吐量急剧下降。这个时候我们可以考虑使用多线程实现的缓存，比如Memcached。但是，我们在 <a class="link"   target="_blank" rel="noopener" href="https://blog.csdn.net/iszhenyu/article/details/86763916" >谈谈缓存（上）<i class="fas fa-external-link-alt"></i></a> 中介绍过，缓存到Memcached中的数据最好不要超过1M的大小。为了减小value 的大小，我们可以对其进行压缩，或者是采用维度化。</p>
+<p>维度化就是把一个大而全的数据，拆成按维度划分的几组数据，比如一个商品可以拆成基础属性、图片列表、规格参数、商品介绍等。如果不做维度化，假如商品的某一项属性发生了变更，就要把这些数据都更新一遍，这个成本还是很高的，而且，不同维度的数据，可能更新的频率都不大一样，维度化后能减少服务很大的压力。</p>
+<h2 id="缓存架构设计的几个细节"><a href="#缓存架构设计的几个细节" class="headerlink" title="缓存架构设计的几个细节"></a>缓存架构设计的几个细节</h2><h3 id="超时时间"><a href="#超时时间" class="headerlink" title="超时时间"></a>超时时间</h3><p>在使用远程缓存（如Redis、Memcached）时，一定要对操作的超时时间进行设置，这是非常关键的。一般我们设计缓存作为加速数据库读取的手段，也会对缓存操作做降级处理，因此推荐使用更短的缓存超时时间，经验值一般是100毫秒以内就可以了。</p>
+<p>有的同学在使用缓存的时候忽略了操作超时的设置，或者超时时间设的很长，这些都有可能带来很严重的问题，比如线程数过高，甚至是内存溢出等。</p>
+<p>究其原因，就是缓存连接数达到最大限制后，应用就无法再连接缓存，然而，又由于超时时间设置得较大，导致访问缓存的服务都在等待缓存操作返回。这个时候，缓存负载较高，处理不完所有的请求，所有的服务都在等待缓存操作返回，服务这时等待没有超时，就不能降级继而访问数据库。这在BIO模式下线程池就会撑满，在NIO模式下一样会使服务的负载增加，服务响应变慢，甚至使服务被压垮。</p>
+<h3 id="缓存预热"><a href="#缓存预热" class="headerlink" title="缓存预热"></a>缓存预热</h3><p>提前把数据读入到缓存的做法就是缓存预热处理。</p>
+<p>对于一些访问量比较大的请求，如果不做缓存预热，会因为缓存无法提供热门数据，而导致大量操作被穿透到底层数据库服务器上，这个风险是无需多说的。做预热处理时，我们要注意下面几个细节问题：</p>
+<p>（1）要有监控机制确保预热数据都写成功了，如果是部分数据成功，可能会对高峰期业务有一定的影响。</p>
+<p>（2）数据预热最好配备回滚方案，遇到紧急情况需要回滚时便于操作。</p>
+<p>（3）对要预热的数据量做好容量评估，在容量允许的范围内预热全量，否则预热访问量高的。</p>
+<p>（4）预热过程中需要注意是否会因为批量数据库操作或慢sql等引发数据库性能问题。</p>
+<h3 id="缓存穿透"><a href="#缓存穿透" class="headerlink" title="缓存穿透"></a>缓存穿透</h3><p>从字面意思理解，缓存没有起到该有的作用，我们的请求到达缓存后没有查询到相应的数据，于是请求继续打到存储系统，就像把缓存层穿透了一样。出现这种问题，一般是由两种情况造成的，第一种情况是被访问的数据确实不存在，另一种情况是数据虽然存在，但是生成缓存数据的成本较高，需要耗费大量的时间和资源。下面我们分别针对这两种情况看下它们所带来的问题和怎么解决。</p>
+<p><strong>存储数据不存在</strong></p>
+<p>如果在存储系统中确实没有存储某项数据，这个时候又恰好有请求来查询该数据，因为在缓存中拿不到结果，每次都要再去存储系统中查找一遍，最终的结果当然还是返回数据不存在。在这种场景下缓存没有能够分担存储系统的访问压力，因此，一旦这种类型的访问量过大，就可能将存储系统拖垮。</p>
+<p>通常情况下，正常的业务不太会读取不存在的数据，我们这里要预防的往往是一些非正常访问，比如黑客的攻击等。解决方法可以参考下面两种：</p>
+<ol>
+<li>给定一个默认值放到缓存中，比如从存储系统查到一个空列表，那就在缓存放一个空集，如果某一项没有查到，就放一个null值等。</li>
+<li>采用布隆过滤器，将所有可能存在的数据哈希到一个足够大的bitmap中，一个不存在的数据会被这个bitmap拦截掉，从而避免了对底层存储系统的查询压力。</li>
+</ol>
+<p>综合来看，方案一实现简单，推荐使用该种方式。</p>
+<p><strong>生成缓存数据需要大量的时间和资源</strong></p>
+<p>这种情况下，问题都是出在缓存刚刚失效的时候，在缓存失效的一瞬间，新的缓存数据不能立即重建，缓存系统不能够发挥作用，访问压力全部集中到了存储系统上。</p>
+<p>如果是量不大的数据，我们可以考虑全量缓存，并且设定数据永不过期，然后使用定时任务定期去更新缓存。</p>
+<p>但是，对于量比较大的数据，其实是没有特别好的方案的，我们唯一能做的就是加好监控，发现问题后及时处理。</p>
+<h3 id="缓存雪崩"><a href="#缓存雪崩" class="headerlink" title="缓存雪崩"></a>缓存雪崩</h3><p>当缓存失效或者是过期后，业务系统需要再次访问存储系统、再次进行计算，来重新生成缓存，这个过程耗费的时间从几十毫秒到上百毫秒不等。对于高并发的系统来说，在这么短的时间内也会有成百上千的请求打过来，这些请求会给存储系统造成巨大的性能压力，严重的甚至会导致数据库宕机，从而使得整个系统崩溃。</p>
+<p>因此，预防缓存雪崩的方案往往都是为了减少同一时间到达存储系统的访问量。</p>
+<p><strong>过期时间随机化</strong></p>
+<p>第一种方案就是将缓存失效时间分散开，对不同key的过期时间进行随机设置，例如，将过期时间设置为60秒+random(5)，也就是将过期时间随机设置成60～65秒，这样最大程度减少了同一时间缓存失效的数量。但是，如果单个key的访问量也足够大，就需要再配合其他的方案了。</p>
+<p><strong>更新锁机制</strong></p>
+<p>对于设定了过期时间的缓存，在更新操作的时候进行加锁保护，保证在同一时间只有一个线程请求到存储层，其他的线程发现已有线程在执行更新操作后，要么等待，要么直接返回默认值。</p>
+<p>我们这里说的加锁，通常指的是分布式锁，因为能够发生雪崩效应的系统必然是有上百台甚至更多的服务器在提供服务，即使单台机器只有一个线程更新缓存，整个集群加起来也会有上百个线程同时请求更新缓存。我们可以考虑使用ZooKeeper或Redis来实现分布式锁。</p>
+<p>当然，如果机器不是很多，或者比较确定存储系统能够抗住同机器数量的请求量，我们是没必要使用分布式锁的，这种东西能不用就不用，系统搞得太复杂了出问题的概率也就相应的变大了。</p>
+<p><strong>缓存不过期机制</strong></p>
+<p>这里的“不过期”指的是在将数据放入缓存系统的同时，没有设置过期时间，也就是“物理”不过期，这样保证了不会出现热点key过期的问题。对于缓存数据的更新问题，可以考虑下面的两种方案：</p>
+<ol>
+<li><p>后台程序起一个定时任务来更新缓存。当数据量不大时，可以把数据全量放到缓存里面，如果数据量较大，就没办法将所有的数据都放到缓存里了，那么，在某一个时刻，就会存在业务线程读取不到数据的情况。解决这个问题的方法有两种：</p>
+<ul>
+<li>后台线程除了定时去更新缓存外，还要频繁的去读取缓存，当读不到数据时，就要及时的更新缓存。这里读取缓存的时间间隔不能太长，通常不要超过1秒，在不影响正常业务的情况下，间隔时间越短越好。</li>
+<li>另外一个方案是，后台线程还是只负责定时更新缓存。当业务线程读取不到缓存时，通过消息队列发送一条通知给后台另外一个线程更新缓存。</li>
+</ul>
+</li>
+<li><p>应对缓存不过期的另一个方案是把过期时间存在key对应的value里，每次拿到数据后逻辑判断下该数据是否过期，如果发现数据已经过期了，就触发一个后台的异步线程进行缓存的刷新。</p>
+<p>如果这个时候其他的业务线程也发现数据过期，并且已有线程在进行缓存刷新操作，就直接返回旧数据。刷新线程在获取最新数据的时候可能会有两种结果，成功或者失败，如果失败了，这里采取的操作是对原缓存进行”续费“，也就是缓存中的旧值不变，但是过期时间在此刻的基础上延后一定时间，在续费的这段时间里，所有的业务线程会将该数据看做是新数据，不会触发更新操作。这样做的好处是避免了在更新失败后的不断重试。</p>
+</li>
+</ol>
+<h3 id="雪崩后的恢复"><a href="#雪崩后的恢复" class="headerlink" title="雪崩后的恢复"></a>雪崩后的恢复</h3><p>如果真的很不幸，发生了上面说的缓存雪崩问题，这个时候一般重启系统是没用的，只能去慢慢将缓存重建，开始的时候需要运维控制流量，等后台系统启动完毕后再循序渐进的放开流量。 流量控制刚开始可以为10%，然后20%，然后50%，然后80%，最后全量，当然具体的比例，尤其是初始比例，还要看后端承受能力和前端流量的比例，各个系统并不相同。</p>
+<p>另外一种方案就是先进行缓存的预热，等缓存热起来后再发布后台系统即可，这样也省去了运维的工作。但是此方案仅仅适用于缓存中key空间不是很大的情况，如果key空间较大，开发预热工具是比较困难的。</p>
+<h3 id="缓存宕机"><a href="#缓存宕机" class="headerlink" title="缓存宕机"></a>缓存宕机</h3><p>这应该是最坏的一种情况，当缓存宕机后，所有的请求会打到存储系统，这样一来大流量会将其压垮。应对这种情况，有三种方案：</p>
+<ol>
+<li>业务线程不请求存储系统，而是打个日志并设置一个默认值。</li>
+<li>业务线程按照一定概率决定是否请求存储系统。</li>
+<li>业务线程检查存储系统运行情况，如果良好则请求存储系统。</li>
+</ol>
+<p>方案1最简单，我们知道存储系统可能扛不住业务的全部流量，索性就不请求存储系统，而是等待Cache恢复。但这时存储系统的利用率为0，显然不是最优方案，而且当请求的Value不容易设置默认值时，这个方案就不行了。</p>
+<p>方案2可以让一部分线程请求存储系统，这部分请求要保证不能击垮存储系统，在设置这个概率时可以保守些。</p>
+<p>方案3是一种更为智能的方案，如果存储系统运行良好，当前线程请求，如果存储系统过载，则不请求，这样让存储系统处于一种宕机与不宕机的临界状态，最大限度挖掘存储系统性能。这种方案要求存储系统提供一个性能评估接口返回Yes和No，Yes表示系统良好，可以请求；No表示系统情况不妙，不要请求。这个接口将被频繁调用，必须高效。</p>
+<p>方案3的关键在于如何评估一个系统的运行状况。一个系统中当前主机的性能参数有CPU负载、内存使用率、Swap使用率、GC频率和GC时间、各个接口平均响应时间等，性能评估接口需要根据这些参数返回Yes或者No，如何提供一套统一的系统性能实时评估方案和工具，不是一个简单的事情。综合来看，方案2还是比较靠谱的。</p>
+<p>综上，我们介绍了在高并发的场景下使用缓存可能会遇到的一些问题，以及一些相应的解决方案，希望对你也有一定的收获。</p>
+<p>完。</p>
+
+        </div>
+
+        
+
+        
+            <div class="article-nav">
+                
+                    <div class="article-prev">
+                        <a class="prev"
+                           rel="prev"
+                           href="/posts/10b4b980-d4e9-11eb-8739-c101f88c7d5c/"
+                        >
+                            <span class="left arrow-icon flex-center">
+                              <i class="fas fa-chevron-left"></i>
+                            </span>
+                            <span class="title flex-center">
+                                <span class="post-nav-title-item">深入理解领域驱动设计里的聚合</span>
+                                <span class="post-nav-item">上一篇</span>
+                            </span>
+                        </a>
+                    </div>
+                
+                
+                    <div class="article-next">
+                        <a class="next"
+                           rel="next"
+                           href="/posts/bc3aa250-71e9-11eb-959b-f5ec2282eb74/"
+                        >
+                            <span class="title flex-center">
+                                <span class="post-nav-title-item">指数基金常见估值指标</span>
+                                <span class="post-nav-item">下一篇</span>
+                            </span>
+                            <span class="right arrow-icon flex-center">
+                              <i class="fas fa-chevron-right"></i>
+                            </span>
+                        </a>
+                    </div>
+                
+            </div>
+        
+
+        
+    </div>
+</div>
+
+
+                
+            </div>
+
+        </div>
+
+        <div class="page-main-content-bottom">
+            <footer class="footer">
+    <div class="info-container">
+        <div class="copyright-info info-item">
+            &copy;
+            
+              <span>2020</span>&nbsp;-&nbsp;
+            
+            2022&nbsp;<i class="fas fa-heart icon-animate"></i>&nbsp;<a href="/">ZhenYu</a>
+        </div>
+        
+            <script async  src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+            <div class="website-count info-item">
+                
+                    <span id="busuanzi_container_site_uv">
+                        访问人数&nbsp;<span id="busuanzi_value_site_uv"></span>&ensp;
+                    </span>
+                
+                
+                    <span id="busuanzi_container_site_pv">
+                        总访问量&nbsp;<span id="busuanzi_value_site_pv"></span>
+                    </span>
+                
+            </div>
+        
+        <div class="theme-info info-item">
+            由 <a target="_blank" href="https://hexo.io">Hexo</a> 驱动&nbsp;|&nbsp;主题&nbsp;<a class="theme-version" target="_blank" href="https://github.com/XPoet/hexo-theme-keep">Keep v3.4.3</a>
+        </div>
+        
+            <div class="icp-info info-item"><a target="_blank" rel="nofollow" href="https://beian.miit.gov.cn">京ICP备18000555号-4</a></div>
+        
+    </div>
+</footer>
+
+        </div>
+    </div>
+
+    
+        <div class="post-tools">
+            <div class="post-tools-container">
+    <ul class="tools-list">
+        <!-- TOC aside toggle -->
+        
+            <li class="tools-item page-aside-toggle">
+                <i class="fas fa-outdent"></i>
+            </li>
+        
+
+        <!-- go comment -->
+        
+    </ul>
+</div>
+
+        </div>
+    
+
+    <div class="right-bottom-side-tools">
+        <div class="side-tools-container">
+    <ul class="side-tools-list">
+        <li class="tools-item tool-font-adjust-plus flex-center">
+            <i class="fas fa-search-plus"></i>
+        </li>
+
+        <li class="tools-item tool-font-adjust-minus flex-center">
+            <i class="fas fa-search-minus"></i>
+        </li>
+
+        <li class="tools-item tool-expand-width flex-center">
+            <i class="fas fa-arrows-alt-h"></i>
+        </li>
+
+        <li class="tools-item tool-dark-light-toggle flex-center">
+            <i class="fas fa-moon"></i>
+        </li>
+
+        <!-- rss -->
+        
+
+        
+
+        <li class="tools-item tool-scroll-to-bottom flex-center">
+            <i class="fas fa-arrow-down"></i>
+        </li>
+    </ul>
+
+    <ul class="exposed-tools-list">
+        <li class="tools-item tool-toggle-show flex-center">
+            <i class="fas fa-cog fa-spin"></i>
+        </li>
+        
+            <li class="tools-item tool-scroll-to-top flex-center">
+                <i class="arrow-up fas fa-arrow-up"></i>
+                <span class="percent"></span>
+            </li>
+        
+    </ul>
+</div>
+
+    </div>
+
+    
+        <aside class="page-aside">
+            <div class="post-toc-wrap">
+    <div class="post-toc">
+        <ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BC%93%E5%AD%98%E7%9A%84%E5%87%A0%E4%B8%AA%E6%A6%82%E5%BF%B5"><span class="nav-number">1.</span> <span class="nav-text">缓存的几个概念</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%91%BD%E4%B8%AD%E7%8E%87"><span class="nav-number">1.1.</span> <span class="nav-text">命中率</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BC%93%E5%AD%98%E5%AE%B9%E9%87%8F"><span class="nav-number">1.2.</span> <span class="nav-text">缓存容量</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B7%98%E6%B1%B0%E7%AE%97%E6%B3%95"><span class="nav-number">1.3.</span> <span class="nav-text">淘汰算法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%BF%87%E6%9C%9F%E7%AD%96%E7%95%A5"><span class="nav-number">1.4.</span> <span class="nav-text">过期策略</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BC%93%E5%AD%98%E7%9A%84%E7%B1%BB%E5%9E%8B"><span class="nav-number">2.</span> <span class="nav-text">缓存的类型</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9C%AC%E5%9C%B0%E7%BC%93%E5%AD%98"><span class="nav-number">2.1.</span> <span class="nav-text">本地缓存</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%86%E5%B8%83%E5%BC%8F%E7%BC%93%E5%AD%98"><span class="nav-number">2.2.</span> <span class="nav-text">分布式缓存</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Memcache"><span class="nav-number">2.2.1.</span> <span class="nav-text">Memcache</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Redis"><span class="nav-number">2.2.2.</span> <span class="nav-text">Redis</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BC%93%E5%AD%98%E7%9A%84%E4%BD%BF%E7%94%A8%E6%A8%A1%E5%BC%8F"><span class="nav-number">3.</span> <span class="nav-text">缓存的使用模式</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Cache-Aside"><span class="nav-number">3.1.</span> <span class="nav-text">Cache-Aside</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Cache-As-SoR"><span class="nav-number">3.2.</span> <span class="nav-text">Cache-As-SoR</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%B7%E4%BD%93%E5%9C%BA%E6%99%AF%E4%B8%8B%E7%9A%84%E8%A7%A3%E5%86%B3%E6%96%B9%E6%A1%88"><span class="nav-number">4.</span> <span class="nav-text">具体场景下的解决方案</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%BA%94%E5%AF%B9%E7%83%AD%E7%82%B9%E7%BC%93%E5%AD%98"><span class="nav-number">4.1.</span> <span class="nav-text">应对热点缓存</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%BA%94%E5%AF%B9%E5%A4%A7%E5%9E%8B%E7%BC%93%E5%AD%98"><span class="nav-number">4.2.</span> <span class="nav-text">应对大型缓存</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BC%93%E5%AD%98%E6%9E%B6%E6%9E%84%E8%AE%BE%E8%AE%A1%E7%9A%84%E5%87%A0%E4%B8%AA%E7%BB%86%E8%8A%82"><span class="nav-number">5.</span> <span class="nav-text">缓存架构设计的几个细节</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%B6%85%E6%97%B6%E6%97%B6%E9%97%B4"><span class="nav-number">5.1.</span> <span class="nav-text">超时时间</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BC%93%E5%AD%98%E9%A2%84%E7%83%AD"><span class="nav-number">5.2.</span> <span class="nav-text">缓存预热</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BC%93%E5%AD%98%E7%A9%BF%E9%80%8F"><span class="nav-number">5.3.</span> <span class="nav-text">缓存穿透</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BC%93%E5%AD%98%E9%9B%AA%E5%B4%A9"><span class="nav-number">5.4.</span> <span class="nav-text">缓存雪崩</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%9B%AA%E5%B4%A9%E5%90%8E%E7%9A%84%E6%81%A2%E5%A4%8D"><span class="nav-number">5.5.</span> <span class="nav-text">雪崩后的恢复</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BC%93%E5%AD%98%E5%AE%95%E6%9C%BA"><span class="nav-number">5.6.</span> <span class="nav-text">缓存宕机</span></a></li></ol></li></ol>
+    </div>
+</div>
+        </aside>
+    
+
+    <div class="image-viewer-container">
+    <img src="">
+</div>
+
+
+    
+
+</main>
+
+
+
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/main.js"></script>
+
+<script src="/js/header-shrink.js"></script>
+
+<script src="/js/back2top.js"></script>
+
+<script src="/js/dark-light-toggle.js"></script>
+
+
+
+
+
+
+
+
+<div class="post-scripts">
+    
+        
+<script src="/js/left-side-toggle.js"></script>
+
+<script src="/js/libs/anime.min.js"></script>
+
+<script src="/js/toc.js"></script>
+
+    
+</div>
+
+
+
+</body>
+</html>

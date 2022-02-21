@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="keywords" content="Hexo Theme Keep">
+    <meta name="description" content="Hexo Theme Keep">
+    <meta name="author" content="ZhenYu">
+    
+    <title>
+        
+            实验平台：设计--分桶 |
+        
+        NoDDD
+    </title>
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <link rel="shortcut icon" href="/images/logo.svg">
+    
+<link rel="stylesheet" href="/css/font-awesome.min.css">
+
+    <script id="hexo-configurations">
+    let KEEP = window.KEEP || {};
+    KEEP.hexo_config = {"hostname":"noddd.cn","root":"/","language":"zh-CN"};
+    KEEP.theme_config = {"toc":{"enable":true,"number":true,"expand_all":true,"init_open":true},"style":{"primary_color":"#0066CC","avatar":"/images/avatar.svg","favicon":"/images/logo.svg","article_img_align":"left","left_side_width":"260px","content_max_width":"920px","hover":{"shadow":false,"scale":false},"first_screen":{"enable":false,"background_img":"/images/bg.svg","description":"Keep writing and Keep loving."},"scroll":{"progress_bar":{"enable":true},"percent":{"enable":true}}},"local_search":{"enable":false,"preload":false},"code_copy":{"enable":false,"style":"default"},"pjax":{"enable":false},"lazyload":{"enable":false},"version":"3.4.3"};
+    KEEP.language_ago = {"second":"%s 秒前","minute":"%s 分钟前","hour":"%s 小时前","day":"%s 天前","week":"%s 周前","month":"%s 月前","year":"%s 年前"};
+  </script>
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<body>
+<div class="progress-bar-container">
+    
+        <span class="scroll-progress-bar"></span>
+    
+
+    
+</div>
+
+
+<main class="page-container">
+
+    
+
+    <div class="page-main-content">
+
+        <div class="page-main-content-top">
+            <header class="header-wrapper">
+
+    <div class="header-content">
+        <div class="left">
+            
+            <a class="logo-title" href="/">
+                NoDDD
+            </a>
+        </div>
+
+        <div class="right">
+            <div class="pc">
+                <ul class="menu-list">
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/"
+                            >
+                                首页
+                            </a>
+                        </li>
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/tags/go"
+                            >
+                                GO
+                            </a>
+                        </li>
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/tags/DDD/"
+                            >
+                                DDD
+                            </a>
+                        </li>
+                    
+                    
+                </ul>
+            </div>
+            <div class="mobile">
+                
+                <div class="icon-item menu-bar">
+                    <div class="menu-bar-middle"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="header-drawer">
+        <ul class="drawer-menu-list">
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/">首页</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/tags/go">GO</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/tags/DDD/">DDD</a>
+                </li>
+            
+        </ul>
+    </div>
+
+    <div class="window-mask"></div>
+
+</header>
+
+
+        </div>
+
+        <div class="page-main-content-middle">
+
+            <div class="main-content">
+
+                
+                    <div class="fade-in-down-animation">
+    <div class="article-content-container">
+
+        <div class="article-title">
+            <span class="title-hover-animation">实验平台：设计--分桶</span>
+        </div>
+
+        
+            <div class="article-header">
+                <div class="avatar">
+                    <img src="/images/avatar.svg">
+                </div>
+                <div class="info">
+                    <div class="author">
+                        <span class="name">ZhenYu</span>
+                        
+                            <span class="author-label">Lv4</span>
+                        
+                    </div>
+                    <div class="meta-info">
+                        <div class="article-meta-info">
+    <span class="article-date article-meta-item">
+        <i class="fas fa-edit"></i>&nbsp;2020-11-05 14:21:44
+    </span>
+    
+    
+        <span class="article-tags article-meta-item">
+            <i class="fas fa-tags"></i>&nbsp;
+            <ul>
+                
+                    <li>
+                        <a href="/tags/abtest/">abtest</a>&nbsp;
+                    </li>
+                
+                    <li>
+                        | <a href="/tags/%E7%B3%BB%E7%BB%9F%E8%AE%BE%E8%AE%A1/">系统设计</a>&nbsp;
+                    </li>
+                
+            </ul>
+        </span>
+    
+
+    
+    
+        <span class="article-wordcount article-meta-item">
+            <i class="fas fa-file-word"></i>&nbsp;<span>694 字</span>
+        </span>
+    
+    
+    
+        <span class="article-pv article-meta-item">
+            <i class="fas fa-eye"></i>&nbsp;<span id="busuanzi_value_page_pv"></span>
+        </span>
+    
+</div>
+
+                    </div>
+                </div>
+            </div>
+        
+
+        <div class="article-content markdown-body">
+            <p>实验平台，具体落地过程，涉及到一些通用问题，当前 blog 将进行详细的讨论：</p>
+<h2 id="分流路由策略（分桶）"><a href="#分流路由策略（分桶）" class="headerlink" title="分流路由策略（分桶）"></a>分流路由策略（分桶）</h2><p>分桶的作用？</p>
+<ul>
+<li>流量的组织粒度：最小粒度为一个分桶；</li>
+<li>均匀分布：分桶的算法，要足够分散，避免数据倾斜；</li>
+<li>作用：是基础设施，支撑流量动态伸缩，借助 <code>shuffle</code> 实现流量的完全正交，同时，借助<code>伪 shuffle</code>支持用户积累效应的实验；</li>
+</ul>
+<p>分桶的实现细节：</p>
+<p><img src="http://pic.noddd.cn/posts/20201105142345.png" alt="bucket-split-details"></p>
+<p>从应用角度，几个考虑点：</p>
+<ol>
+<li>同一个 userId，在不同的访问时间，是否命中相同的实验和分组？<ol>
+<li>用户体验的一致性</li>
+</ol>
+</li>
+</ol>
+<p>针对所有的流量，常见分流路由策略：</p>
+<p><img src="http://pic.noddd.cn/posts/20201105142552.png" alt="flow-split-param-comparison"></p>
+<p>分流路由参数介绍：</p>
+<ol>
+<li>流量完全随机：random<ol>
+<li>最简单的分流方式，流量随机命中各个实验和分组；</li>
+</ol>
+</li>
+<li>用户标识id 的哈希：hash(userId)<ol>
+<li>同一个用户会一直命中同一实验，从而保证了用户体验的一致性；</li>
+<li>对同一用户具有累积效应的策略的实验需求；</li>
+</ol>
+</li>
+<li>用户标识id+日期的哈希：hash(userId_day)<ol>
+<li>流量划分在跨时间维度上更为均匀；</li>
+<li>用户请求，跨时间区间时，用户体验不一致；</li>
+</ol>
+</li>
+<li>用户id尾号划分：userId 尾号<ol>
+<li>常用、很简单的分流方式，保证了用户体验的一致性；（<em>用户的累计效应</em>）</li>
+<li>可能会由于尾号分布的不均匀性而造成流量分布的不够均匀，影响实验的可对比性；</li>
+<li>一种折衷方案是，根据用户标识 id「中间若干位」来进行流量的划分；</li>
+</ol>
+</li>
+</ol>
+<p>Note：</p>
+<ul>
+<li>白名单机制：指定如果用户命中指定的实验和分组；</li>
+</ul>
+<p>常用 Hash 算法：</p>
+<ul>
+<li>MD5 + Modulo：先 MD5 再取余</li>
+</ul>
+<h2 id="分桶实现细节"><a href="#分桶实现细节" class="headerlink" title="分桶实现细节"></a>分桶实现细节</h2><p>分桶的初始化、分配、调整、释放，都是在 Experiment Server 侧进行，核心过程，参考下文示意图：</p>
+<p><img src="http://pic.noddd.cn/posts/20201105144349.png" alt="bucket-assign-and-release"></p>
+<p><img src="http://pic.noddd.cn/posts/20201105144630.png" alt="bucket-usage-details"></p>
+<p>分层 &amp; 分桶的核心算法（判断流量命中哪个分桶）：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 分流策略(计算流量对应分桶的编号)</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> paramId 参数Id: 流量的标识</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@param</span> layerId 分层Id</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@return</span> 流量对应分桶编号.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">int</span> <span class="title">getBucketNo</span><span class="params">(String paramId, Integer layerId)</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 计算 MD5</span></span><br><span class="line">    String destKey = (StringUtils.isNotBlank(paramId) ? paramId : <span class="string">&quot;&quot;</span>) + String.valueOf(layerId);</span><br><span class="line">    String md5Hex = DigestUtils.md5Hex(destKey);</span><br><span class="line"> </span><br><span class="line">    <span class="keyword">long</span> hash = Long.parseUnsignedLong(md5Hex.substring(md5Hex.length() - <span class="number">16</span>, md5Hex.length() - <span class="number">1</span>), <span class="number">16</span>);</span><br><span class="line">    <span class="keyword">if</span> (hash &lt; <span class="number">0</span>) &#123;</span><br><span class="line">        hash = hash * (-<span class="number">1</span>);</span><br><span class="line">    &#125;</span><br><span class="line"> </span><br><span class="line">    <span class="comment">// 取模</span></span><br><span class="line">    <span class="keyword">return</span> (<span class="keyword">int</span>) (hash % BUCKET_TOTAL_NUM);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><ul>
+<li><a class="link"   target="_blank" rel="noopener" href="http://www.infoq.com/cn/articles/alimama-large-scale-online-hierarchical-experiment" >阿里妈妈大规模在线分层实验实践<i class="fas fa-external-link-alt"></i></a></li>
+<li><a class="link"   target="_blank" rel="noopener" href="http://www.weiot.net/article-4661-1.html" >超越AB-Test，算法参数化与Google实验架构<i class="fas fa-external-link-alt"></i></a></li>
+<li><a class="link"   target="_blank" rel="noopener" href="http://www.csdn.net/article/2015-03-24/2824303" >大众点评并行 AB 测试框架 Gemini<i class="fas fa-external-link-alt"></i></a></li>
+<li><a class="link"   target="_blank" rel="noopener" href="https://medium.com/airbnb-engineering/experiments-at-airbnb-e2db3abf39e7" >Experiments at Airbnb<i class="fas fa-external-link-alt"></i></a></li>
+<li><a class="link"   target="_blank" rel="noopener" href="http://www.infoq.com/cn/articles/weibo-ad-layered-experiment-platform-faraday" >微博广告分层实验平台(Faraday)架构实践<i class="fas fa-external-link-alt"></i></a></li>
+<li><a class="link"   target="_blank" rel="noopener" href="https://static.googleusercontent.com/media/research.google.com/zh-CN//pubs/archive/36500.pdf" >Overlapping Experiment Infrastructure- More, Better, Faster Experimentation.pdf<i class="fas fa-external-link-alt"></i></a></li>
+</ul>
+<blockquote>
+<p>原文出处：<a class="link"   target="_blank" rel="noopener" href="https://ningg.top/experiment-series-flow-router/" >https://ningg.top/experiment-series-flow-router/<i class="fas fa-external-link-alt"></i></a></p>
+</blockquote>
+
+        </div>
+
+        
+
+        
+            <div class="article-nav">
+                
+                    <div class="article-prev">
+                        <a class="prev"
+                           rel="prev"
+                           href="/posts/4da5a010-2e55-11eb-b4a4-03f48a66ad92/"
+                        >
+                            <span class="left arrow-icon flex-center">
+                              <i class="fas fa-chevron-left"></i>
+                            </span>
+                            <span class="title flex-center">
+                                <span class="post-nav-title-item">你真的知道怎么实现一个延迟队列吗？</span>
+                                <span class="post-nav-item">上一篇</span>
+                            </span>
+                        </a>
+                    </div>
+                
+                
+                    <div class="article-next">
+                        <a class="next"
+                           rel="next"
+                           href="/posts/883bb140-1f20-11eb-ae5c-cb49ba4a7dc1/"
+                        >
+                            <span class="title flex-center">
+                                <span class="post-nav-title-item">应用架构之道：分离业务逻辑和技术细节</span>
+                                <span class="post-nav-item">下一篇</span>
+                            </span>
+                            <span class="right arrow-icon flex-center">
+                              <i class="fas fa-chevron-right"></i>
+                            </span>
+                        </a>
+                    </div>
+                
+            </div>
+        
+
+        
+    </div>
+</div>
+
+
+                
+            </div>
+
+        </div>
+
+        <div class="page-main-content-bottom">
+            <footer class="footer">
+    <div class="info-container">
+        <div class="copyright-info info-item">
+            &copy;
+            
+              <span>2020</span>&nbsp;-&nbsp;
+            
+            2022&nbsp;<i class="fas fa-heart icon-animate"></i>&nbsp;<a href="/">ZhenYu</a>
+        </div>
+        
+            <script async  src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+            <div class="website-count info-item">
+                
+                    <span id="busuanzi_container_site_uv">
+                        访问人数&nbsp;<span id="busuanzi_value_site_uv"></span>&ensp;
+                    </span>
+                
+                
+                    <span id="busuanzi_container_site_pv">
+                        总访问量&nbsp;<span id="busuanzi_value_site_pv"></span>
+                    </span>
+                
+            </div>
+        
+        <div class="theme-info info-item">
+            由 <a target="_blank" href="https://hexo.io">Hexo</a> 驱动&nbsp;|&nbsp;主题&nbsp;<a class="theme-version" target="_blank" href="https://github.com/XPoet/hexo-theme-keep">Keep v3.4.3</a>
+        </div>
+        
+            <div class="icp-info info-item"><a target="_blank" rel="nofollow" href="https://beian.miit.gov.cn">京ICP备18000555号-4</a></div>
+        
+    </div>
+</footer>
+
+        </div>
+    </div>
+
+    
+        <div class="post-tools">
+            <div class="post-tools-container">
+    <ul class="tools-list">
+        <!-- TOC aside toggle -->
+        
+            <li class="tools-item page-aside-toggle">
+                <i class="fas fa-outdent"></i>
+            </li>
+        
+
+        <!-- go comment -->
+        
+    </ul>
+</div>
+
+        </div>
+    
+
+    <div class="right-bottom-side-tools">
+        <div class="side-tools-container">
+    <ul class="side-tools-list">
+        <li class="tools-item tool-font-adjust-plus flex-center">
+            <i class="fas fa-search-plus"></i>
+        </li>
+
+        <li class="tools-item tool-font-adjust-minus flex-center">
+            <i class="fas fa-search-minus"></i>
+        </li>
+
+        <li class="tools-item tool-expand-width flex-center">
+            <i class="fas fa-arrows-alt-h"></i>
+        </li>
+
+        <li class="tools-item tool-dark-light-toggle flex-center">
+            <i class="fas fa-moon"></i>
+        </li>
+
+        <!-- rss -->
+        
+
+        
+
+        <li class="tools-item tool-scroll-to-bottom flex-center">
+            <i class="fas fa-arrow-down"></i>
+        </li>
+    </ul>
+
+    <ul class="exposed-tools-list">
+        <li class="tools-item tool-toggle-show flex-center">
+            <i class="fas fa-cog fa-spin"></i>
+        </li>
+        
+            <li class="tools-item tool-scroll-to-top flex-center">
+                <i class="arrow-up fas fa-arrow-up"></i>
+                <span class="percent"></span>
+            </li>
+        
+    </ul>
+</div>
+
+    </div>
+
+    
+        <aside class="page-aside">
+            <div class="post-toc-wrap">
+    <div class="post-toc">
+        <ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%86%E6%B5%81%E8%B7%AF%E7%94%B1%E7%AD%96%E7%95%A5%EF%BC%88%E5%88%86%E6%A1%B6%EF%BC%89"><span class="nav-number">1.</span> <span class="nav-text">分流路由策略（分桶）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%86%E6%A1%B6%E5%AE%9E%E7%8E%B0%E7%BB%86%E8%8A%82"><span class="nav-number">2.</span> <span class="nav-text">分桶实现细节</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8F%82%E8%80%83%E8%B5%84%E6%96%99"><span class="nav-number">3.</span> <span class="nav-text">参考资料</span></a></li></ol>
+    </div>
+</div>
+        </aside>
+    
+
+    <div class="image-viewer-container">
+    <img src="">
+</div>
+
+
+    
+
+</main>
+
+
+
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/main.js"></script>
+
+<script src="/js/header-shrink.js"></script>
+
+<script src="/js/back2top.js"></script>
+
+<script src="/js/dark-light-toggle.js"></script>
+
+
+
+
+
+
+
+
+<div class="post-scripts">
+    
+        
+<script src="/js/left-side-toggle.js"></script>
+
+<script src="/js/libs/anime.min.js"></script>
+
+<script src="/js/toc.js"></script>
+
+    
+</div>
+
+
+
+</body>
+</html>
